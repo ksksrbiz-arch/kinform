@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { interestTypes, type InterestType } from "@/lib/designs";
 import { toast } from "sonner";
+import { submitInquiry } from "@/lib/actions";
 
 const formSchema = z.object({
   name: z.string().min(2, "Please enter your name"),
@@ -43,26 +44,25 @@ export function InterestForm({ onSuccess, defaultType = "Early Access List" }: I
   const showCompany = selectedType === "Wholesale Inquiry" || selectedType === "Production Collaboration";
 
   const onSubmit = async (data: FormValues) => {
-    // TODO: Replace with real Formspree submission
-    // Example:
-    // const res = await fetch(process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT!, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(data),
-    // });
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    formData.append("type", data.type);
+    if (data.company) formData.append("company", data.company);
+    if (data.message) formData.append("message", data.message);
+    if (data.source) formData.append("source", data.source);
 
-    console.log("KINFORM Interest Form submission (demo):", data);
+    const result = await submitInquiry(formData);
 
-    // Simulate network
-    await new Promise((r) => setTimeout(r, 650));
-
-    toast.success("Thank you. We've received your inquiry.", {
-      description: "We'll be in touch within 48 hours.",
-      duration: 5000,
-    });
-
-    reset();
-    onSuccess?.();
+    if (result.success) {
+      toast.success(result.message, {
+        description: "We'll be in touch within 48 hours.",
+      });
+      reset();
+      onSuccess?.();
+    } else {
+      toast.error(result.message);
+    }
   };
 
   return (

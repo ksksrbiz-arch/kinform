@@ -1,4 +1,6 @@
 import { TechPackGenerator } from "@/components/techpack/TechPackGenerator";
+import { BOMGenerator } from "@/components/production/BOMGenerator";
+import Link from "next/link";
 
 export const metadata = {
   title: "The Atelier | KINFORM",
@@ -21,23 +23,33 @@ export default function AtelierPage() {
         <TechPackGenerator />
       </div>
 
-      {/* Future tools placeholder */}
-      <div className="mt-20 pt-10 border-t border-[#D4C9B8]">
-        <div className="uppercase text-xs tracking-widest text-[#9A8671] mb-3">COMING SOON</div>
-        <h3 className="font-display text-4xl tracking-tight mb-4">Production Suite</h3>
-        <div className="grid md:grid-cols-3 gap-6 text-sm">
-          {[
-            "Graded spec sheets (XS–XXL)",
-            "Bill of Materials (BOM) export",
-            "Costing & supplier comparison tools",
-            "Size chart generator with ease tables",
-            "Label & packaging specifications",
-            "Internal production dashboard",
-          ].map((item, i) => (
-            <div key={i} className="p-6 border border-[#D4C9B8] bg-white/50 rounded-lg">{item}</div>
-          ))}
+      {/* BOM Module — now live */}
+      <div className="mt-16 pt-10 border-t border-[#D4C9B8]">
+        <div className="mb-6">
+          <div className="uppercase tracking-[0.15em] text-xs text-[#9A8671]">PRODUCTION AUTOMATION</div>
+          <h2 className="font-display text-4xl tracking-tight mt-1">Bill of Materials Generator</h2>
         </div>
-        <p className="text-xs text-[#9A8671] mt-6">These tools will be available to approved production partners. Inquire via the form above.</p>
+        <BOMGenerator />
+      </div>
+
+      {/* Internal Tools Links */}
+      <div className="mt-12 pt-8 border-t border-[#D4C9B8] grid md:grid-cols-2 gap-6">
+        <Link
+          href="/atelier/inquiries"
+          className="block p-8 border border-[#D4C9B8] rounded-2xl hover:border-[#B37A5F] group"
+        >
+          <div className="text-[#9A8671] text-xs tracking-widest mb-2">INTERNAL</div>
+          <div className="font-display text-3xl group-hover:text-[#B37A5F]">Inquiries Dashboard →</div>
+          <p className="mt-3 text-[#6F5A47]">View, manage, and export all form submissions. Update status and add follow-up notes.</p>
+        </Link>
+
+        <div className="p-8 border border-[#D4C9B8] rounded-2xl bg-white/40">
+          <div className="text-[#9A8671] text-xs tracking-widest mb-2">NEXT UP</div>
+          <div className="font-display text-3xl">Size Grading Engine</div>
+          <p className="mt-3 text-[#6F5A47]">
+            Automatic graded measurement tables and ease calculations. Coming in the next automation sprint.
+          </p>
+        </div>
       </div>
     </div>
   );

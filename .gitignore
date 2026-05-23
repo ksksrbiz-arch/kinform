@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local data / leads (do not commit real inquiries)
+data/
+!data/.gitkeep
