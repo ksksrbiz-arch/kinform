@@ -1,26 +1,244 @@
 @import "tailwindcss";
 
+/* ============================================
+   KINFORM — Warm Contemporary Design System
+   Refined, feminine, approachable luxury
+   ============================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Warm neutral palette */
+  --bg-cream: #F8F4ED;
+  --bg-paper: #F1E9DF;
+  --text-charcoal: #2C2722;
+  --text-deep: #1F1B18;
+  --accent-taupe: #9A8671;
+  --accent-bronze: #6F5A47;
+  --accent-clay: #B37A5F;
+  --border-subtle: #D4C9B8;
+  --success: #5C6B4E;
+
+  /* Typography variables (set by next/font) */
+  --font-display: var(--font-playfair);
+  --font-sans: var(--font-inter);
+
+  /* Spacing rhythm (8px base) */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 3rem;
+  --space-6: 4rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  background: var(--bg-cream);
+  color: var(--text-charcoal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Elegant display typography (Playfair) */
+.font-display {
+  font-family: var(--font-display);
+  font-feature-settings: "kern" "liga" "tnum";
+}
+
+/* Base typography refinements */
+h1, h2, .display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+p, .body {
+  font-feature-settings: "kern" "tnum";
+}
+
+/* Premium link + button foundation */
+a {
+  transition: color 200ms ease, opacity 200ms ease;
+}
+
+a:hover {
+  color: var(--accent-clay);
+}
+
+/* Primary CTA button — clay accent, refined */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  background: var(--accent-clay);
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 250ms cubic-bezier(0.23, 1, 0.32, 1);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary:hover {
+  background: var(--accent-bronze);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--accent-clay);
+  outline-offset: 3px;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  background: transparent;
+  color: var(--text-charcoal);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border: 1px solid var(--border-subtle);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 200ms ease;
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  background: var(--bg-paper);
+  border-color: var(--accent-taupe);
+}
+
+/* Elegant cards for collection */
+.elegant-card {
+  background: white;
+  border: 1px solid var(--border-subtle);
+  transition: transform 400ms cubic-bezier(0.23, 1, 0.32, 1), 
+              box-shadow 400ms cubic-bezier(0.23, 1, 0.32, 1),
+              border-color 200ms ease;
+  overflow: hidden;
+}
+
+.elegant-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.08);
+  border-color: var(--accent-taupe);
+}
+
+.elegant-card img {
+  transition: transform 600ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.elegant-card:hover img {
+  transform: scale(1.035);
+}
+
+/* Section rhythm */
+.section {
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-6);
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding-top: var(--space-5);
+    padding-bottom: var(--space-5);
+  }
+}
+
+/* Form elements — warm, refined */
+input, textarea, select {
+  font-family: var(--font-sans);
+  background: white;
+  border: 1px solid var(--border-subtle);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  font-size: 0.9375rem;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--accent-clay);
+  box-shadow: 0 0 0 3px rgba(179, 122, 95, 0.1);
+  outline: none;
+}
+
+label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--accent-bronze);
+}
+
+/* Modal / Dialog base (used by TechPack + Interest) */
+.modal {
+  background: var(--bg-cream);
+  border: 1px solid var(--border-subtle);
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+/* Subtle divider */
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--border-subtle), transparent);
+}
+
+/* Tech pack preview table polish */
+.tech-table th {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  background: var(--bg-paper);
+}
+
+.tech-table td {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Accessibility + reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visible for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--accent-clay);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Small utility for image captions in lookbook */
+.image-caption {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--accent-taupe);
+  text-transform: uppercase;
+}
+
+/* Footer refinement */
+footer {
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* Print styles for future PDF-friendly pages (not the generated PDF) */
+@media print {
+  .no-print {
+    display: none !important;
+  }
 }
