@@ -1,10 +1,8 @@
-import Link from "next/link";
-import { designs } from "@/lib/designs";
+"use client";
 
-export const metadata = {
-  title: "The Collection | KINFORM",
-  description: "Explore the debut collection: TETHER, CLASP, and APERTURE — three original designs for the modern woman.",
-};
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { designs } from "@/lib/designs";
 
 export default function CollectionPage() {
   return (
@@ -15,14 +13,27 @@ export default function CollectionPage() {
         <p className="max-w-md mt-4 text-xl text-[#6F5A47]">Three signature pieces. Each one a quiet manifesto.</p>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <motion.div 
+        className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-50px" }}
+        variants={{
+          visible: { transition: { staggerChildren: 0.08 } }
+        }}
+      >
         {designs.map((design, index) => (
           <Link
             key={design.slug}
             href={`/designs/${design.slug}`}
             className="group block"
           >
-            <div className="elegant-card bg-white border border-[#D4C9B8] overflow-hidden rounded-3xl h-full flex flex-col hover:border-[#B37A5F] transition-all duration-300">
+            <motion.div 
+              variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0 } }}
+              whileHover={{ y: -12 }}
+              transition={{ type: "spring", stiffness: 260, damping: 20 }}
+              className="elegant-card bg-white border border-[#D4C9B8] overflow-hidden rounded-3xl h-full flex flex-col hover:border-[#B37A5F] transition-all duration-300"
+            >
               <div className="aspect-[16/11] bg-[#F1E9DF] relative flex items-center justify-center">
                 <div className="text-center px-8">
                   <div className="text-[10px] tracking-[0.3em] text-[#9A8671] mb-2">0{index + 1} TECHNICAL FLAT</div>
@@ -40,10 +51,10 @@ export default function CollectionPage() {
                 <p className="text-[#6F5A47] leading-snug flex-1">{design.shortDesc}</p>
                 <div className="mt-auto pt-6 text-xs tracking-[0.15em] text-[#B37A5F] group-hover:underline">VIEW DETAILS &amp; TOOLS →</div>
               </div>
-            </div>
+            </motion.div>
           </Link>
         ))}
-      </div>
+      </motion.div>
 
       <div className="mt-16 text-center text-sm text-[#6F5A47]">
         Each piece is designed to be worn alone or layered. <Link href="/atelier" className="underline hover:text-[#B37A5F]">Generate a tech pack for production partners.</Link>

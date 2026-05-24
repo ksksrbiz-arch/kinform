@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -13,6 +14,7 @@ export default function DesignDetail() {
   const slug = params.slug;
 
   const design = getDesign(slug);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   if (!design) return notFound();
 
@@ -33,17 +35,24 @@ export default function DesignDetail() {
         <div className="lg:col-span-3">
           <div className="sticky top-24">
             <motion.div 
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6 }}
-              className="aspect-[4/3.1] bg-[#F1E9DF] rounded-3xl flex items-center justify-center border border-[#D4C9B8] overflow-hidden mb-6 shadow-sm"
+              initial={{ opacity: 0, scale: 0.96, y: 30 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="aspect-[4/3.1] bg-[#F1E9DF] rounded-3xl flex items-center justify-center border border-[#D4C9B8] overflow-hidden mb-6 shadow-sm relative"
             >
-              {/* TODO: Replace with real professional flat sketch */}
-              <div className="text-center p-8">
+              {/* Scroll-triggered reveal for the flat sketch */}
+              <motion.div 
+                initial={{ opacity: 0.3, scale: 0.92, filter: "blur(4px)" }}
+                whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                className="text-center p-8"
+              >
                 <div className="font-mono text-xs tracking-[0.3em] text-[#9A8671] mb-1">{design.number} — TECHNICAL DRAWING</div>
                 <div className="font-display text-[92px] leading-none tracking-[-0.04em] text-[#B37A5F]/60">{design.name}</div>
                 <p className="mt-4 text-sm max-w-[260px] mx-auto text-[#6F5A47]">Insert your professional flat sketch here<br />(/public/images/{design.slug}/{design.slug}-flat.png)</p>
-              </div>
+              </motion.div>
             </motion.div>
 
             <div className="text-xs text-[#9A8671] tracking-widest">DETAILS &amp; SPECIFICATIONS BELOW — SCROLL TO GENERATE TECH PACK</div>
@@ -107,14 +116,14 @@ export default function DesignDetail() {
             </div>
           </motion.div>
 
-          {/* Measurement table — Animated */}
+          {/* Measurement table — Interactive + Animated */}
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h4 className="font-medium tracking-widest text-xs mb-4 text-[#2C2722]">MEASUREMENTS (CM)</h4>
+            <h4 className="font-medium tracking-widest text-xs mb-4 text-[#2C2722]">MEASUREMENTS (CM) — Click a size to highlight</h4>
             <div className="overflow-x-auto">
               <table className="tech-table w-full text-sm border-collapse">
                 <thead>
@@ -126,14 +135,29 @@ export default function DesignDetail() {
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.entries(design.measurements).map(([size, specs]) => (
-                    <tr key={size}>
-                      <td className="py-2.5 px-3 font-medium border-t">{size}</td>
-                      {Object.values(specs).map((val, idx) => (
-                        <td key={idx} className="py-2.5 px-3 border-t tabular-nums">{val}</td>
-                      ))}
-                    </tr>
-                  ))}
+                  {Object.entries(design.measurements).map(([size, specs]) => {
+                    const isSelected = selectedSize === size;
+                    return (
+                      <motion.tr 
+                        key={size}
+                        onClick={() => setSelectedSize(isSelected ? null : size)}
+                        whileHover={{ backgroundColor: "rgba(179, 122, 95, 0.06)" }}
+                        animate={{ 
+                          backgroundColor: isSelected ? "rgba(179, 122, 95, 0.12)" : "transparent",
+                          scale: isSelected ? 1.01 : 1 
+                        }}
+                        transition={{ duration: 0.2 }}
+                        className="cursor-pointer border-t"
+                      >
+                        <td className={`py-2.5 px-3 font-medium transition-colors ${isSelected ? 'text-[#B37A5F] font-semibold' : ''}`}>
+                          {size}
+                        </td>
+                        {Object.values(specs).map((val, idx) => (
+                          <td key={idx} className="py-2.5 px-3 border-t tabular-nums">{val}</td>
+                        ))}
+                      </motion.tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

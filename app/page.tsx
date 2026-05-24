@@ -60,7 +60,13 @@ export default function KinformHome() {
           </Link>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <motion.div 
+          className="grid md:grid-cols-3 gap-6"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
+        >
           {[
             { name: "TETHER", desc: "Short-sleeve collared shirt with integrated vertical tie detail and waist knot accent.", slug: "tether" },
             { name: "CLASP", desc: "Sleeveless wrap top with gathered waist knot and asymmetrical hem. Feminine and versatile.", slug: "clasp" },
@@ -72,6 +78,7 @@ export default function KinformHome() {
               className="group block"
             >
               <motion.div 
+                variants={{ hidden: { opacity: 0, y: 50 }, visible: { opacity: 1, y: 0 } }}
                 whileHover={{ y: -12 }}
                 transition={{ type: "spring", stiffness: 260, damping: 20 }}
                 className="elegant-card bg-white border border-[#D4C9B8] p-9 rounded-3xl h-full flex flex-col justify-between hover:border-[#B37A5F] transition-all duration-300"
@@ -84,7 +91,7 @@ export default function KinformHome() {
               </motion.div>
             </Link>
           ))}
-        </div>
+        </motion.div>
 
         <div className="mt-8 text-center md:hidden">
           <Link href="/designs" className="btn-secondary">View Full Lookbook →</Link>
