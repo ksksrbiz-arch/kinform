@@ -8,16 +8,21 @@ export const metadata = {
 export default function WholesalePage() {
   return (
     <div className="max-w-2xl mx-auto px-8 py-16">
-      <h1 className="font-display text-6xl tracking-tight mb-3">Wholesale Application</h1>
-      <p className="text-xl text-[#6F5A47] mb-10">
-        Interested in carrying KINFORM? Please fill out the form below and our team will reach out with line sheets and pricing.
-      </p>
+      <div className="mb-10">
+        <h1 className="font-display text-6xl tracking-tight mb-3">Wholesale Application</h1>
+        <p className="text-xl text-[#6F5A47]">
+          Interested in carrying KINFORM in your store? Fill out the form below and we’ll send line sheets, pricing, and order minimums.
+        </p>
+      </div>
 
-      <InterestForm defaultType="Wholesale Inquiry" />
+      <div className="bg-white border border-[#D4C9B8] rounded-3xl p-8 md:p-10">
+        <InterestForm defaultType="Wholesale Inquiry" />
+      </div>
 
-      <div className="mt-10 text-sm text-[#6F5A47] border-t border-[#D4C9B8] pt-8">
-        <p><strong>Minimum order:</strong> 12 units per style (flexible for first orders)</p>
-        <p className="mt-1"><strong>Lead time:</strong> 8–12 weeks from order confirmation</p>
+      <div className="mt-10 text-sm text-[#6F5A47] border-t border-[#D4C9B8] pt-8 space-y-1">
+        <p><strong>Minimum first order:</strong> 12 units per style (flexible for launch partners)</p>
+        <p><strong>Lead time:</strong> 8–12 weeks</p>
+        <p><strong>Payment terms:</strong> 50% deposit, 50% prior to shipment</p>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { BOMGenerator } from "@/components/production/BOMGenerator";
 import { SizeGradingTool } from "@/components/production/SizeGradingTool";
 import { LabelPackagingTool } from "@/components/production/LabelPackagingTool";
 import { ProductionPacketExporter } from "@/components/production/ProductionPacketExporter";
+import { RecentActivity } from "@/components/production/RecentActivity";
 import { ProductionNav } from "@/components/layout/ProductionNav";
 import { getProductionStats } from "@/lib/actions";
 import Link from "next/link";
@@ -63,6 +64,9 @@ export default async function AtelierPage() {
       <div className="mb-8">
         <ProductionPacketExporter />
       </div>
+
+      {/* Recent Activity */}
+      <RecentActivity />
 
       <div id="techpack">
         <TechPackGenerator />

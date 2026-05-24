@@ -200,31 +200,31 @@ export default function InquiriesDashboard() {
           No inquiries match your filters.
         </div>
       ) : (
-        <div className="overflow-x-auto border border-[#D4C9B8] rounded-xl bg-white">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto border border-[#D4C9B8] rounded-xl bg-white -mx-2 px-2 md:mx-0 md:px-0">
+          <table className="w-full text-sm min-w-[1000px] md:min-w-full">
             <thead className="bg-[#F1E9DF] text-left">
               <tr>
-                <th className="px-4 py-3 font-medium">Date</th>
-                <th className="px-4 py-3 font-medium">Name / Email</th>
-                <th className="px-4 py-3 font-medium">Type</th>
-                <th className="px-4 py-3 font-medium">Company</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Tasks &amp; Notes</th>
-                <th className="px-4 py-3 font-medium w-24">Actions</th>
+                <th className="px-3 py-3 font-medium text-left w-20 md:w-auto">Date</th>
+                <th className="px-3 py-3 font-medium text-left">Name / Email</th>
+                <th className="px-3 py-3 font-medium text-left hidden md:table-cell">Type</th>
+                <th className="px-3 py-3 font-medium text-left hidden lg:table-cell">Company</th>
+                <th className="px-3 py-3 font-medium text-left">Status</th>
+                <th className="px-3 py-3 font-medium text-left">Tasks &amp; Notes</th>
+                <th className="px-3 py-3 font-medium text-left w-16 md:w-24">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#D4C9B8]">
               {filtered.map((inq) => (
                 <tr key={inq.id} className="hover:bg-[#F8F4ED]/50">
-                  <td className="px-4 py-3 text-xs text-[#9A8671] whitespace-nowrap">
+                  <td className="px-3 py-3 text-xs text-[#9A8671] whitespace-nowrap">
                     {new Date(inq.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-3 py-3">
                     <div className="font-medium">{inq.name}</div>
                     <div className="text-xs text-[#6F5A47]">{inq.email}</div>
                   </td>
-                  <td className="px-4 py-3 text-xs">{inq.type}</td>
-                  <td className="px-4 py-3 text-xs">{inq.company || "—"}</td>
+                  <td className="px-3 py-3 text-xs hidden md:table-cell">{inq.type}</td>
+                  <td className="px-3 py-3 text-xs hidden lg:table-cell">{inq.company || "—"}</td>
                   <td className="px-4 py-3">
                     <select
                       value={inq.status}
