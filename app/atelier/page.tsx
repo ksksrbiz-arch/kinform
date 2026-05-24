@@ -2,6 +2,8 @@ import { TechPackGenerator } from "@/components/techpack/TechPackGenerator";
 import { BOMGenerator } from "@/components/production/BOMGenerator";
 import { SizeGradingTool } from "@/components/production/SizeGradingTool";
 import { LabelPackagingTool } from "@/components/production/LabelPackagingTool";
+import { ProductionNav } from "@/components/layout/ProductionNav";
+import { getProductionStats } from "@/lib/actions";
 import Link from "next/link";
 
 export const metadata = {
@@ -9,7 +11,8 @@ export const metadata = {
   description: "Professional tech pack generator for the KINFORM debut collection. Production-ready PDFs for founders and manufacturers.",
 };
 
-export default function AtelierPage() {
+export default async function AtelierPage() {
+  const stats = await getProductionStats();
   return (
     <div className="max-w-6xl mx-auto px-8 pt-10 pb-20">
       <div className="max-w-2xl mb-8">
@@ -20,13 +23,38 @@ export default function AtelierPage() {
         </p>
       </div>
 
-      {/* Quick navigation */}
-      <div className="flex flex-wrap gap-3 mb-10 text-sm">
-        <a href="#techpack" className="btn-secondary px-5 py-1.5 text-sm">Tech Packs</a>
-        <a href="#bom" className="btn-secondary px-5 py-1.5 text-sm">Bill of Materials</a>
-        <a href="#grading" className="btn-secondary px-5 py-1.5 text-sm">Size Grading</a>
-        <a href="#labels" className="btn-secondary px-5 py-1.5 text-sm">Labels &amp; Packaging</a>
-        <Link href="/atelier/inquiries" className="btn-primary px-5 py-1.5 text-sm">Inquiries Dashboard →</Link>
+      {/* Dashboard Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white border border-[#D4C9B8] rounded-xl p-5">
+          <div className="text-xs text-[#9A8671]">TOTAL INQUIRIES</div>
+          <div className="font-display text-4xl mt-1">{stats.totalInquiries}</div>
+        </div>
+        <div className="bg-white border border-[#D4C9B8] rounded-xl p-5">
+          <div className="text-xs text-[#9A8671]">NEW / UNCONTACTED</div>
+          <div className="font-display text-4xl mt-1 text-[#B37A5F]">{stats.newInquiries}</div>
+        </div>
+        <div className="bg-white border border-[#D4C9B8] rounded-xl p-5">
+          <div className="text-xs text-[#9A8671]">THIS WEEK</div>
+          <div className="font-display text-4xl mt-1">{stats.thisWeek}</div>
+        </div>
+        <Link
+          href="/atelier/inquiries"
+          className="bg-[#2C2722] text-white rounded-xl p-5 flex flex-col justify-center hover:bg-black transition-colors"
+        >
+          <div className="text-sm">MANAGE LEADS →</div>
+          <div className="font-medium mt-1">Open Inquiries Dashboard</div>
+        </Link>
+      </div>
+
+      {/* Quick navigation + production status */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div className="flex flex-wrap gap-3 text-sm">
+          <a href="#techpack" className="btn-secondary px-5 py-1.5 text-sm">Tech Packs</a>
+          <a href="#bom" className="btn-secondary px-5 py-1.5 text-sm">Bill of Materials</a>
+          <a href="#grading" className="btn-secondary px-5 py-1.5 text-sm">Size Grading</a>
+          <a href="#labels" className="btn-secondary px-5 py-1.5 text-sm">Labels &amp; Packaging</a>
+        </div>
+        <ProductionNav />
       </div>
 
       <div id="techpack">

@@ -1,6 +1,6 @@
 "use server";
 
-import { createInquiry, Inquiry } from "./inquiries";
+import { createInquiry, Inquiry, getAllInquiries } from "./inquiries";
 import { InterestType } from "./designs";
 import { Resend } from "resend";
 
@@ -63,3 +63,25 @@ export async function submitInquiry(formData: FormData): Promise<{
     };
   }
 }
+
+/**
+ * Get quick stats for the production dashboard.
+ */
+export async function getProductionStats() {
+  const inquiries = await getAllInquiries();
+
+  const newCount = inquiries.filter((i) => i.status === "new").length;
+  const thisWeek = inquiries.filter((i) => {
+    const date = new Date(i.createdAt);
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return date > weekAgo;
+  }).length;
+
+  return {
+    totalInquiries: inquiries.length,
+    newInquiries: newCount,
+    thisWeek,
+  };
+}
+

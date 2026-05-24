@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Inquiry, InquiryStatus } from "@/lib/inquiries";
 import { interestTypes } from "@/lib/designs";
 import { inquiriesToCSV } from "@/lib/csv";
+import { ProductionNav } from "@/components/layout/ProductionNav";
 import { toast } from "sonner";
 
 const STATUSES: InquiryStatus[] = ["new", "contacted", "qualified", "closed"];
@@ -99,9 +100,12 @@ export default function InquiriesDashboard() {
           <div className="text-xs tracking-[0.2em] text-[#9A8671]">INTERNAL • PRODUCTION</div>
           <h1 className="font-display text-6xl tracking-tight">Inquiries Dashboard</h1>
         </div>
-        <button onClick={exportCSV} className="btn-secondary">
-          Export CSV
-        </button>
+        <div className="flex items-center gap-4">
+          <ProductionNav />
+          <button onClick={exportCSV} className="btn-secondary">
+            Export CSV
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
