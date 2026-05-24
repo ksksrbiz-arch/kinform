@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { getDesign, designs } from "@/lib/designs";
 import { TechPackGenerator } from "@/components/techpack/TechPackGenerator";
+import { Modal } from "@/components/ui/Modal";
 
 import { useParams } from "next/navigation";
 
@@ -15,6 +16,7 @@ export default function DesignDetail() {
 
   const design = getDesign(slug);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [showTechPack, setShowTechPack] = useState(false);
 
   if (!design) return notFound();
 
@@ -201,7 +203,7 @@ export default function DesignDetail() {
         <p className="mt-8 text-sm text-[#6F5A47]"><strong>Care:</strong> {design.careInstructions}</p>
       </motion.div>
 
-      {/* Inline Tech Pack Generator — Featured */}
+      {/* Tech Pack — Desktop inline + Mobile bottom sheet trigger */}
       <div id="techpack" className="mt-20 pt-10 border-t border-[#D4C9B8]">
         <div className="max-w-2xl mb-8">
           <div className="uppercase text-xs tracking-[0.2em] text-[#B37A5F]">PRODUCTION READY</div>
@@ -209,14 +211,30 @@ export default function DesignDetail() {
           <p className="mt-3 text-[#6F5A47]">Customize fabrics and notes. Download a clean, professional PDF for your pattern maker or factory.</p>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
+        {/* Desktop: Always visible */}
+        <div className="hidden lg:block">
           <TechPackGenerator initialDesignSlug={design.slug} />
-        </motion.div>
+        </div>
+
+        {/* Mobile: Floating button + Modal */}
+        <div className="lg:hidden">
+          <button 
+            onClick={() => setShowTechPack(true)}
+            className="btn-primary w-full py-4 text-base"
+          >
+            Open Tech Pack Generator
+          </button>
+        </div>
       </div>
+
+      <Modal 
+        isOpen={showTechPack} 
+        onClose={() => setShowTechPack(false)} 
+        title={`Tech Pack — ${design.name}`}
+        size="lg"
+      >
+        <TechPackGenerator initialDesignSlug={design.slug} />
+      </Modal>
     </div>
   );
 }
