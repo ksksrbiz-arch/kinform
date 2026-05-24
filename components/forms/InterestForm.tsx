@@ -23,9 +23,10 @@ interface InterestFormProps {
   onSuccess?: () => void;
   defaultType?: InterestType;
   allowAttachments?: boolean;
+  piece?: string; // e.g. "CLASP", "TETHER", "APERTURE"
 }
 
-export function InterestForm({ onSuccess, defaultType = "Early Access List", allowAttachments = false }: InterestFormProps) {
+export function InterestForm({ onSuccess, defaultType = "Early Access List", allowAttachments = false, piece }: InterestFormProps) {
   const {
     register,
     handleSubmit,
@@ -54,7 +55,11 @@ export function InterestForm({ onSuccess, defaultType = "Early Access List", all
     formData.append("email", data.email);
     formData.append("type", data.type);
     if (data.company) formData.append("company", data.company);
-    if (data.message) formData.append("message", data.message);
+    let finalMessage = data.message || "";
+    if (piece) {
+      finalMessage = finalMessage ? `${finalMessage}\n\nInterested in: ${piece}` : `Interested in: ${piece}`;
+    }
+    if (finalMessage) formData.append("message", finalMessage);
     if (data.source) formData.append("source", data.source);
 
     // Append files if any

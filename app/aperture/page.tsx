@@ -1,25 +1,25 @@
 import { InterestForm } from "@/components/forms/InterestForm";
 
 export const metadata = {
-  title: "CLASP — First Small-Batch Drop | KINFORM",
-  description: "Join the first production run of CLASP, our signature wrap top. Made to order in sustainable fabrics. Limited quantities.",
+  title: "APERTURE — First Small-Batch Drop | KINFORM",
+  description: "Pre-order APERTURE, the bold long-sleeve statement piece with the signature triangular cutout. First production run — made to order.",
 };
 
-export default function ClaspLandingPage() {
+export default function ApertureLandingPage() {
   return (
     <div className="max-w-3xl mx-auto px-8 py-16">
       <div className="text-center mb-12">
         <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-3">FIRST PRODUCTION RUN</div>
-        <h1 className="font-display text-7xl tracking-[-0.04em] mb-4">CLASP</h1>
-        <p className="text-2xl text-[#6F5A47]">The Signature Wrap Top</p>
+        <h1 className="font-display text-7xl tracking-[-0.04em] mb-4">APERTURE</h1>
+        <p className="text-2xl text-[#6F5A47]">The Bold Statement Piece</p>
       </div>
 
       <div className="prose prose-lg max-w-none text-[#2C2722] mb-10">
         <p>
-          CLASP is our most loved silhouette — a sleeveless (or cap-sleeve) wrap top with a beautiful gathered waist knot and an asymmetrical hem that moves with you.
+          APERTURE is our most architectural design — a long-sleeve high-neck top with a prominent triangular cutout at the chest and dramatic bell sleeves.
         </p>
         <p>
-          Cut in soft, sustainable fabrics (Tencel or organic cotton), it drapes beautifully and feels like a second skin. Wear it with trousers, denim, or the matching bottom from the Aperture set.
+          The hem treatment allows it to function beautifully as a standalone piece or as part of a coordinated set. Cut in more structured fabrics for this first run, it makes a quiet but powerful statement.
         </p>
       </div>
 
@@ -33,7 +33,7 @@ export default function ClaspLandingPage() {
           </p>
         </div>
 
-        <InterestForm defaultType="Pre-Order / First Run" piece="CLASP" />
+        <InterestForm defaultType="Pre-Order / First Run" piece="APERTURE" />
       </div>
 
       <div className="text-center text-sm text-[#6F5A47]">

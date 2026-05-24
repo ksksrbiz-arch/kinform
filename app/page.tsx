@@ -86,6 +86,9 @@ export default function KinformHome() {
               >
                 <div>
                   <div className="uppercase text-[10px] tracking-[0.25em] text-[#B37A5F] mb-3">0{i+1} / SIGNATURE</div>
+                  <div className="inline-block mb-2 px-3 py-0.5 text-[10px] font-medium bg-[#B37A5F] text-white rounded-full tracking-wider">
+                    PRE-ORDER FIRST DROP
+                  </div>
                   <h3 className="font-display text-7xl tracking-[-0.03em] mb-6 group-hover:text-[#B37A5F] transition-colors">{d.name}</h3>
                 </div>
                 <p className="text-[#6F5A47] text-[15px] leading-snug pr-4">{d.desc}</p>
@@ -156,7 +159,7 @@ export default function KinformHome() {
           Clean, elevated, and made to order in limited quantities.
         </p>
         <div className="max-w-md mx-auto">
-          <InterestForm defaultType="Pre-Order / First Run" />
+          <InterestForm defaultType="Pre-Order / First Run" piece="TETHER" />
         </div>
       </section>
 
@@ -168,7 +171,7 @@ export default function KinformHome() {
           Our most architectural design — made to order.
         </p>
         <div className="max-w-md mx-auto">
-          <InterestForm defaultType="Pre-Order / First Run" />
+          <InterestForm defaultType="Pre-Order / First Run" piece="APERTURE" />
         </div>
       </section>
 

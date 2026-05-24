@@ -1,25 +1,25 @@
 import { InterestForm } from "@/components/forms/InterestForm";
 
 export const metadata = {
-  title: "CLASP — First Small-Batch Drop | KINFORM",
-  description: "Join the first production run of CLASP, our signature wrap top. Made to order in sustainable fabrics. Limited quantities.",
+  title: "TETHER — First Small-Batch Drop | KINFORM",
+  description: "Pre-order TETHER, the collared shirt with the signature vertical tie detail. First production run — made to order in limited quantities.",
 };
 
-export default function ClaspLandingPage() {
+export default function TetherLandingPage() {
   return (
     <div className="max-w-3xl mx-auto px-8 py-16">
       <div className="text-center mb-12">
         <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-3">FIRST PRODUCTION RUN</div>
-        <h1 className="font-display text-7xl tracking-[-0.04em] mb-4">CLASP</h1>
-        <p className="text-2xl text-[#6F5A47]">The Signature Wrap Top</p>
+        <h1 className="font-display text-7xl tracking-[-0.04em] mb-4">TETHER</h1>
+        <p className="text-2xl text-[#6F5A47]">The Signature Collared Shirt</p>
       </div>
 
       <div className="prose prose-lg max-w-none text-[#2C2722] mb-10">
         <p>
-          CLASP is our most loved silhouette — a sleeveless (or cap-sleeve) wrap top with a beautiful gathered waist knot and an asymmetrical hem that moves with you.
+          TETHER is our modern take on the classic collared shirt — featuring a continuous vertical tie detail that runs down the center front and a subtle waist knot accent.
         </p>
         <p>
-          Cut in soft, sustainable fabrics (Tencel or organic cotton), it drapes beautifully and feels like a second skin. Wear it with trousers, denim, or the matching bottom from the Aperture set.
+          It has a relaxed yet elevated fit, making it incredibly versatile. Wear it buttoned up for a polished look or open over a tank for something more casual. Made to order in sustainable fabrics.
         </p>
       </div>
 
@@ -33,7 +33,7 @@ export default function ClaspLandingPage() {
           </p>
         </div>
 
-        <InterestForm defaultType="Pre-Order / First Run" piece="CLASP" />
+        <InterestForm defaultType="Pre-Order / First Run" piece="TETHER" />
       </div>
 
       <div className="text-center text-sm text-[#6F5A47]">
