@@ -6,39 +6,58 @@ import { motion } from "framer-motion";
 export default function KinformHome() {
   return (
     <>
-      {/* Hero — warm, editorial, premium (global Header sits above) */}
-      <section className="min-h-[88vh] flex items-center relative overflow-hidden border-b border-[#D4C9B8]">
-        <div className="max-w-5xl mx-auto px-8 pt-12 pb-16 text-center">
-          <div className="inline-block px-4 py-1 mb-6 text-[10px] tracking-[0.18em] text-[#9A8671] border border-[#D4C9B8] rounded-full">
-            DEBUT COLLECTION • 2026
-          </div>
+      {/* Hero — Bold, youthful, cinematic */}
+      <section className="min-h-[92vh] flex items-center relative overflow-hidden border-b border-[#D4C9B8] bg-[#F8F4ED]">
+        <div className="max-w-5xl mx-auto px-8 pt-16 pb-20 text-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="inline-block px-5 py-1.5 mb-8 text-xs tracking-[0.2em] border border-[#B37A5F]/40 rounded-full text-[#B37A5F] font-medium"
+          >
+            DEBUT COLLECTION 2026
+          </motion.div>
 
-          <h1 className="font-display text-[92px] md:text-[118px] leading-[0.86] tracking-[-0.045em] mb-5">
+          <h1 className="font-display text-[110px] md:text-[140px] leading-[0.82] tracking-[-0.055em] mb-6">
             KINFORM
           </h1>
-          <p className="max-w-md mx-auto text-2xl text-[#6F5A47] tracking-[-0.01em] mb-11">
-            Contemporary forms.<br />Quiet connections.
+
+          <p className="max-w-lg mx-auto text-2xl md:text-3xl text-[#6F5A47] tracking-[-0.01em] mb-12">
+            Three original designs.<br />For the ones who move differently.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="#collection" className="btn-primary text-base px-10 py-3.5">Explore the Three Designs</Link>
-            <Link href="#join" className="btn-secondary text-base px-8">Join the Early List</Link>
+            <Link 
+              href="#collection" 
+              className="btn-primary text-base px-12 py-4 text-lg font-semibold"
+            >
+              Explore the Collection
+            </Link>
+            <Link 
+              href="#join" 
+              className="btn-secondary text-base px-10 py-4 text-lg"
+            >
+              Request Early Access
+            </Link>
           </div>
+        </div>
 
-          <div className="mt-20 text-[10px] tracking-[0.2em] text-[#9A8671] flex items-center justify-center gap-3">
-            <div className="h-px w-10 bg-[#D4C9B8]" /> SCROLL TO DISCOVER <div className="h-px w-10 bg-[#D4C9B8]" />
-          </div>
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 text-[10px] tracking-[0.25em] text-[#9A8671] flex items-center gap-4">
+          SCROLL TO BEGIN
+          <div className="w-px h-6 bg-[#D4C9B8]" />
         </div>
       </section>
 
-      {/* Collection teaser */}
+      {/* Collection — Premium & Animated */}
       <section id="collection" className="section max-w-7xl mx-auto px-8">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-8 gap-3">
+        <div className="flex items-end justify-between mb-10">
           <div>
-            <div className="uppercase text-[10px] tracking-[0.18em] text-[#9A8671] mb-1">THE DEBUT COLLECTION</div>
-            <h2 className="font-display text-6xl md:text-7xl tracking-[-0.03em]">Three Signatures</h2>
+            <div className="uppercase text-xs tracking-[0.2em] text-[#B37A5F] mb-2">DEBUT COLLECTION</div>
+            <h2 className="font-display text-7xl md:text-8xl tracking-[-0.04em]">Three Signatures</h2>
           </div>
-          <Link href="/designs" className="btn-secondary self-start md:self-auto">View Full Lookbook →</Link>
+          <Link href="/designs" className="hidden md:flex btn-secondary text-base items-center gap-2">
+            Full Lookbook <span className="text-lg">→</span>
+          </Link>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
@@ -50,46 +69,55 @@ export default function KinformHome() {
             <Link 
               key={i} 
               href={`/designs/${d.slug}`} 
-              className="elegant-card group block bg-white border p-8 aspect-[4/3.15] flex flex-col justify-end hover:border-[#B37A5F] overflow-hidden"
+              className="group block"
             >
               <motion.div 
-                whileHover={{ scale: 1.02 }}
-                className="origin-left"
+                whileHover={{ y: -12 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                className="elegant-card bg-white border border-[#D4C9B8] p-9 rounded-3xl h-full flex flex-col justify-between hover:border-[#B37A5F] transition-all duration-300"
               >
-                <div className="text-[10px] tracking-[0.2em] text-[#9A8671] mb-2">0{i + 1} / SIGNATURE PIECE</div>
-                <h3 className="font-display text-6xl tracking-[-0.02em] mb-4 group-hover:text-[#B37A5F] transition-colors">{d.name}</h3>
-                <p className="text-[#6F5A47] leading-snug max-w-[32ch] pr-4">{d.desc}</p>
+                <div>
+                  <div className="uppercase text-[10px] tracking-[0.25em] text-[#B37A5F] mb-3">0{i+1} / SIGNATURE</div>
+                  <h3 className="font-display text-7xl tracking-[-0.03em] mb-6 group-hover:text-[#B37A5F] transition-colors">{d.name}</h3>
+                </div>
+                <p className="text-[#6F5A47] text-[15px] leading-snug pr-4">{d.desc}</p>
               </motion.div>
             </Link>
           ))}
         </div>
-      </section>
 
-      {/* Brand philosophy teaser */}
-      <section className="section border-y border-[#D4C9B8] bg-white/50">
-        <div className="max-w-3xl mx-auto px-8 text-center">
-          <p className="text-2xl leading-tight tracking-[-0.01em] text-[#6F5A47]">
-            A new language of dressing — rooted in connection, crafted for the woman who values both ease and intention.
-          </p>
-          <Link href="/story" className="inline-block mt-6 text-sm tracking-widest hover:text-[#B37A5F]">READ THE FULL STORY →</Link>
+        <div className="mt-8 text-center md:hidden">
+          <Link href="/designs" className="btn-secondary">View Full Lookbook →</Link>
         </div>
       </section>
 
-      {/* Atelier teaser */}
-      <section className="section max-w-4xl mx-auto px-8 text-center border-b border-[#D4C9B8]">
-        <div className="uppercase tracking-[0.15em] text-xs text-[#9A8671] mb-3">FOR FOUNDERS, MAKERS &amp; PARTNERS</div>
-        <h3 className="font-display text-5xl tracking-tight mb-4">The Atelier</h3>
-        <p className="text-lg text-[#6F5A47] max-w-lg mx-auto mb-8">
-          Generate professional technical packages for any of the three designs. Production-ready PDFs with measurements, construction notes, and fabric guidance.
-        </p>
-        <Link href="/atelier" className="btn-primary">Open Tech Pack Generator</Link>
+      {/* Philosophy — Confident & Modern */}
+      <section className="section border-y border-[#D4C9B8] bg-white">
+        <div className="max-w-2xl mx-auto px-8 text-center">
+          <p className="text-3xl md:text-4xl leading-tight tracking-[-0.015em] text-[#2C2722]">
+            Clothing that feels like it already belongs to you.
+          </p>
+          <Link href="/story" className="mt-8 inline-block text-sm tracking-[0.15em] font-medium hover:text-[#B37A5F] transition-colors">THE STORY BEHIND IT →</Link>
+        </div>
       </section>
 
-      {/* Final CTA */}
+      {/* Atelier Teaser — Now with real power */}
+      <section className="section max-w-5xl mx-auto px-8 text-center border-b border-[#D4C9B8]">
+        <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-3">FOR FOUNDERS, MAKERS &amp; PARTNERS</div>
+        <h3 className="font-display text-6xl tracking-[-0.03em] mb-4">The Atelier</h3>
+        <p className="max-w-md mx-auto text-lg text-[#6F5A47] mb-8">
+          Production tools built for the ones actually making things. Tech packs, BOMs, grading, and real cost tracking.
+        </p>
+        <Link href="/atelier" className="btn-primary text-base px-14 py-4">Enter the Atelier</Link>
+      </section>
+
+      {/* Final CTA — Stronger */}
       <section id="join" className="section max-w-xl mx-auto px-8 text-center">
-        <h3 className="font-display text-5xl tracking-[-0.02em] mb-5">Be the first to know.</h3>
-        <p className="text-[#6F5A47] text-lg mb-9">Early access to the collection, wholesale information, and production collaboration opportunities.</p>
-        <Link href="/atelier" className="btn-primary text-base px-12">Enter the Atelier</Link>
+        <h3 className="font-display text-6xl tracking-[-0.03em] mb-6">Ready to move with us?</h3>
+        <p className="text-[#6F5A47] text-lg mb-10 max-w-md mx-auto">
+          Early access, wholesale, and production partnerships.
+        </p>
+        <Link href="/atelier" className="btn-primary text-lg px-16 py-4">Join the Movement</Link>
       </section>
     </>
   );

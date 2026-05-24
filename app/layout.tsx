@@ -4,7 +4,6 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -47,7 +46,7 @@ export default function RootLayout({
         <main className="flex-1 pt-20">{children}</main>
         <Footer />
         <Toaster position="top-center" richColors closeButton />
-        <SpeedInsights />
+
       </body>
     </html>
   );

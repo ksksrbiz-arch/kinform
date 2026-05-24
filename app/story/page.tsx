@@ -8,7 +8,9 @@ export const metadata = {
 export default function StoryPage() {
   return (
     <div className="max-w-3xl mx-auto px-8 pt-12 pb-24">
-      <h1 className="font-display text-7xl tracking-[-0.03em] mb-8">A Lineage in Form</h1>
+      <h1 className="font-display text-7xl md:text-8xl tracking-[-0.04em] mb-8">
+        A Lineage in Form
+      </h1>
 
       <div className="prose prose-lg max-w-none text-[#2C2722] space-y-6 text-[17px] leading-relaxed">
         <p>
@@ -39,7 +41,7 @@ export default function StoryPage() {
       </div>
 
       <div className="mt-16 pt-8 border-t border-[#D4C9B8] text-sm text-[#6F5A47]">
-        Designed with care. <Link href="/atelier" className="underline">Explore production tools →</Link>
+        Designed with care. <Link href="/atelier" className="underline hover:text-[#B37A5F]">Explore production tools →</Link>
       </div>
     </div>
   );
