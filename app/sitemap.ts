@@ -58,6 +58,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    // Accessories
+    {
+      url: `${BASE_URL}/accessories`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.85,
+    },
+    {
+      url: `${BASE_URL}/accessories/earrings`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
     // Brand / editorial
     {
       url: `${BASE_URL}/story`,
