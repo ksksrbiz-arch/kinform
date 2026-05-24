@@ -53,6 +53,7 @@ export default async function AtelierPage() {
           <a href="#bom" className="btn-secondary px-5 py-1.5 text-sm">Bill of Materials</a>
           <a href="#grading" className="btn-secondary px-5 py-1.5 text-sm">Size Grading</a>
           <a href="#labels" className="btn-secondary px-5 py-1.5 text-sm">Labels &amp; Packaging</a>
+          <Link href="/atelier/costs" className="btn-secondary px-5 py-1.5 text-sm">Cost Database</Link>
         </div>
         <ProductionNav />
       </div>

@@ -107,14 +107,39 @@ You will almost never need to open anything except `lib/designs.ts` and the `pub
 
 ---
 
-## Deploying to the Web (Vercel — Recommended)
+## Deploying to Vercel (Recommended)
 
-1. Push this folder to GitHub.
-2. Go to [vercel.com](https://vercel.com), import the repo.
-3. Add the `NEXT_PUBLIC_FORMSPREE_ENDPOINT` environment variable in the Vercel dashboard.
-4. Deploy.
+### 1. Prepare Environment Variables
 
-The site is static + client-side only — zero ongoing cost on the free tier.
+Create the following variables in your Vercel project (or `.env.local` locally):
+
+| Variable                          | Required?     | Description |
+|-----------------------------------|---------------|-----------|
+| `NEXT_PUBLIC_FORMSPREE_ENDPOINT`  | Recommended   | Your Formspree form endpoint (e.g. `https://formspree.io/f/xxxxx`) |
+| `PRODUCTION_PASSWORD`             | Strongly recommended | Secret password to access `/atelier` internal tools |
+| `RESEND_API_KEY`                  | Optional      | For sending email notifications on new inquiries |
+| `RESEND_FROM`                     | Optional      | Email address to send from (e.g. `hello@kinform.studio`) |
+
+### 2. Deployment Steps
+
+1. Push your code to GitHub.
+2. Go to [vercel.com](https://vercel.com) → New Project → Import your `kinform` repo.
+3. In **Environment Variables**, add the keys above.
+4. Click **Deploy**.
+
+After the first deployment:
+- Set up a custom domain if desired.
+- Redeploy after changing env vars.
+
+### 3. Post-Deployment Checklist
+
+- [ ] Set a strong `PRODUCTION_PASSWORD`
+- [ ] Test the login at `https://yourdomain.com/atelier/login`
+- [ ] Verify new inquiries appear in the dashboard
+- [ ] Test PDF downloads from all production tools
+- [ ] (Optional) Connect Resend and test email notifications
+
+The production tools (`/atelier`, `/atelier/inquiries`, `/atelier/costs`) are now protected behind the password you set.
 
 ---
 

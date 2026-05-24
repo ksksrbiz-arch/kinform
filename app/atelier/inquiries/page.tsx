@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Inquiry, InquiryStatus } from "@/lib/inquiries";
+import { Inquiry, InquiryStatus, InquiryTask } from "@/lib/inquiries";
 import { interestTypes } from "@/lib/designs";
 import { inquiriesToCSV } from "@/lib/csv";
 import { ProductionNav } from "@/components/layout/ProductionNav";
@@ -17,6 +17,8 @@ export default function InquiriesDashboard() {
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editNotes, setEditNotes] = useState("");
+  const [taskInput, setTaskInput] = useState<Record<string, string>>({}); // inquiryId -> task description
+  const [expandedTasks, setExpandedTasks] = useState<Record<string, boolean>>({});
 
   const loadInquiries = async () => {
     setLoading(true);
@@ -80,6 +82,52 @@ export default function InquiriesDashboard() {
     await fetch(`/api/inquiries/${id}`, { method: "DELETE" });
     setInquiries((prev) => prev.filter((i) => i.id !== id));
     toast.success("Inquiry deleted");
+  };
+
+  // Task handlers
+  const toggleTaskExpanded = (id: string) => {
+    setExpandedTasks(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const addTask = async (inquiryId: string) => {
+    const desc = taskInput[inquiryId]?.trim();
+    if (!desc) return;
+
+    const res = await fetch(`/api/inquiries/${inquiryId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "addTask", description: desc }),
+    });
+    const updated = await res.json();
+    if (updated) {
+      setInquiries(prev => prev.map(i => i.id === inquiryId ? updated : i));
+      setTaskInput(prev => ({ ...prev, [inquiryId]: "" }));
+      toast.success("Task added");
+    }
+  };
+
+  const toggleTaskComplete = async (inquiryId: string, taskId: string) => {
+    const res = await fetch(`/api/inquiries/${inquiryId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "toggleTask", taskId }),
+    });
+    const updated = await res.json();
+    if (updated) {
+      setInquiries(prev => prev.map(i => i.id === inquiryId ? updated : i));
+    }
+  };
+
+  const deleteTask = async (inquiryId: string, taskId: string) => {
+    const res = await fetch(`/api/inquiries/${inquiryId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "deleteTask", taskId }),
+    });
+    const updated = await res.json();
+    if (updated) {
+      setInquiries(prev => prev.map(i => i.id === inquiryId ? updated : i));
+    }
   };
 
   const exportCSV = () => {
@@ -161,7 +209,7 @@ export default function InquiriesDashboard() {
                 <th className="px-4 py-3 font-medium">Type</th>
                 <th className="px-4 py-3 font-medium">Company</th>
                 <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Notes</th>
+                <th className="px-4 py-3 font-medium">Tasks &amp; Notes</th>
                 <th className="px-4 py-3 font-medium w-24">Actions</th>
               </tr>
             </thead>
@@ -188,30 +236,61 @@ export default function InquiriesDashboard() {
                       ))}
                     </select>
                   </td>
-                  <td className="px-4 py-3">
-                    {editingId === inq.id ? (
-                      <div className="flex gap-2">
-                        <textarea
-                          value={editNotes}
-                          onChange={(e) => setEditNotes(e.target.value)}
-                          className="text-xs border border-[#D4C9B8] p-1 flex-1 min-w-[180px]"
-                          rows={2}
-                        />
-                        <button onClick={() => saveNotes(inq.id)} className="text-xs btn-primary px-3 py-1">
-                          Save
-                        </button>
-                        <button onClick={() => setEditingId(null)} className="text-xs btn-secondary px-2">
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <div
-                        onClick={() => startEditing(inq)}
-                        className="cursor-pointer text-xs min-h-[28px] text-[#6F5A47] hover:text-[#2C2722]"
+
+                  {/* Tasks + Notes */}
+                  <td className="px-4 py-3 text-xs">
+                    <div className="flex items-center gap-2 mb-1">
+                      <button 
+                        onClick={() => toggleTaskExpanded(inq.id)}
+                        className="text-[#B37A5F] hover:underline flex items-center gap-1"
                       >
-                        {inq.notes || <span className="italic text-[#9A8671]">Add notes…</span>}
+                        {inq.tasks?.length || 0} tasks {expandedTasks[inq.id] ? "▲" : "▼"}
+                      </button>
+                      <button onClick={() => startEditing(inq)} className="text-[#9A8671] hover:text-[#2C2722]">+ notes</button>
+                    </div>
+
+                    {expandedTasks[inq.id] && (
+                      <div className="mt-2 space-y-2 border-l-2 border-[#D4C9B8] pl-3">
+                        {(inq.tasks || []).map(task => (
+                          <div key={task.id} className="flex items-start gap-2 text-[11px]">
+                            <input 
+                              type="checkbox" 
+                              checked={task.completed}
+                              onChange={() => toggleTaskComplete(inq.id, task.id)}
+                              className="mt-0.5"
+                            />
+                            <div className={`flex-1 ${task.completed ? "line-through text-[#9A8671]" : ""}`}>
+                              {task.description}
+                              {task.dueDate && <span className="ml-2 text-[#B37A5F]">due {new Date(task.dueDate).toLocaleDateString()}</span>}
+                            </div>
+                            <button onClick={() => deleteTask(inq.id, task.id)} className="text-red-500">×</button>
+                          </div>
+                        ))}
+
+                        <div className="flex gap-2 mt-2">
+                          <input
+                            type="text"
+                            placeholder="New task..."
+                            value={taskInput[inq.id] || ""}
+                            onChange={(e) => setTaskInput(prev => ({ ...prev, [inq.id]: e.target.value }))}
+                            onKeyDown={(e) => { if (e.key === "Enter") addTask(inq.id); }}
+                            className="flex-1 border border-[#D4C9B8] px-2 py-1 text-xs rounded"
+                          />
+                          <button onClick={() => addTask(inq.id)} className="btn-primary text-[10px] px-3">Add</button>
+                        </div>
                       </div>
                     )}
+
+                    {editingId === inq.id ? (
+                      <div className="mt-2 flex gap-2">
+                        <textarea value={editNotes} onChange={e => setEditNotes(e.target.value)} className="flex-1 border p-1 text-xs" rows={2} />
+                        <button onClick={() => saveNotes(inq.id)} className="btn-primary text-xs px-2">Save</button>
+                      </div>
+                    ) : inq.notes ? (
+                      <div onClick={() => startEditing(inq)} className="mt-1 text-[#6F5A47] cursor-pointer hover:underline">
+                        Note: {inq.notes.slice(0, 80)}...
+                      </div>
+                    ) : null}
                   </td>
                   <td className="px-4 py-3">
                     <button

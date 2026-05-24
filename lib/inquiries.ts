@@ -16,6 +16,14 @@ const INQUIRIES_FILE = path.join(DATA_DIR, "inquiries.json");
 
 export type InquiryStatus = "new" | "contacted" | "qualified" | "closed";
 
+export interface InquiryTask {
+  id: string;
+  description: string;
+  dueDate?: string;
+  completed: boolean;
+  createdAt: string;
+}
+
 export interface Inquiry {
   id: string;
   createdAt: string; // ISO string
@@ -28,6 +36,7 @@ export interface Inquiry {
   status: InquiryStatus;
   notes?: string;
   followedUpAt?: string;
+  tasks?: InquiryTask[];
 }
 
 export interface InquiryFilters {
@@ -179,3 +188,52 @@ export function inquiriesToCSV(inquiries: Inquiry[]): string {
     ...rows.map((row) => row.map((cell) => escape(String(cell))).join(",")),
   ].join("\n");
 }
+
+// ================== TASKS ==================
+
+export async function addTaskToInquiry(inquiryId: string, description: string, dueDate?: string): Promise<Inquiry | null> {
+  const inquiries = await getAllInquiries();
+  const index = inquiries.findIndex(i => i.id === inquiryId);
+  if (index === -1) return null;
+
+  const newTask: InquiryTask = {
+    id: `task_${Date.now()}`,
+    description,
+    dueDate,
+    completed: false,
+    createdAt: new Date().toISOString(),
+  };
+
+  if (!inquiries[index].tasks) inquiries[index].tasks = [];
+  inquiries[index].tasks!.push(newTask);
+
+  await saveInquiries(inquiries);
+  return inquiries[index];
+}
+
+export async function toggleTask(inquiryId: string, taskId: string): Promise<Inquiry | null> {
+  const inquiries = await getAllInquiries();
+  const inquiryIndex = inquiries.findIndex(i => i.id === inquiryId);
+  if (inquiryIndex === -1) return null;
+
+  const tasks = inquiries[inquiryIndex].tasks || [];
+  const taskIndex = tasks.findIndex(t => t.id === taskId);
+  if (taskIndex === -1) return null;
+
+  tasks[taskIndex].completed = !tasks[taskIndex].completed;
+  inquiries[inquiryIndex].tasks = tasks;
+
+  await saveInquiries(inquiries);
+  return inquiries[inquiryIndex];
+}
+
+export async function deleteTask(inquiryId: string, taskId: string): Promise<Inquiry | null> {
+  const inquiries = await getAllInquiries();
+  const inquiryIndex = inquiries.findIndex(i => i.id === inquiryId);
+  if (inquiryIndex === -1) return null;
+
+  inquiries[inquiryIndex].tasks = (inquiries[inquiryIndex].tasks || []).filter(t => t.id !== taskId);
+  await saveInquiries(inquiries);
+  return inquiries[inquiryIndex];
+}
+
