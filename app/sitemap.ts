@@ -22,38 +22,38 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     // Individual design detail pages (under /designs/[slug])
     {
-      url: `${BASE_URL}/designs/tether`,
+      url: `${BASE_URL}/designs/halter`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.85,
     },
     {
-      url: `${BASE_URL}/designs/clasp`,
+      url: `${BASE_URL}/designs/fishnet`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.85,
     },
     {
-      url: `${BASE_URL}/designs/aperture`,
+      url: `${BASE_URL}/designs/academic`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.85,
     },
     // Standalone product landing pages (pre-order funnels)
     {
-      url: `${BASE_URL}/tether`,
+      url: `${BASE_URL}/halter`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/clasp`,
+      url: `${BASE_URL}/fishnet`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/aperture`,
+      url: `${BASE_URL}/academic`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,

@@ -17,7 +17,7 @@ interface BOMLine {
 }
 
 export function BOMGenerator() {
-  const [selectedSlug, setSelectedSlug] = useState("tether");
+  const [selectedSlug, setSelectedSlug] = useState("halter");
   const [quantity, setQuantity] = useState(50);
   const [fabric, setFabric] = useState("");
   const [materialCosts, setMaterialCosts] = useState<MaterialCost[]>([]);
@@ -43,24 +43,32 @@ export function BOMGenerator() {
       { item: "Hangtag", description: "Kraft 300gsm + string", qtyPerUnit: 1, unit: "pcs", supplier: "TBD" },
     ];
 
-    if (slug === "tether") {
+    if (slug === "halter") {
       base.push(
-        { item: "Buttons", description: "12L corozo or horn", qtyPerUnit: 5, unit: "pcs" },
-        { item: "Interfacing", description: "Lightweight fusible", qtyPerUnit: 0.3, unit: "m" }
+        { item: "Underwire", description: "Premium plastic-coated steel underwires", qtyPerUnit: 2, unit: "pcs" },
+        { item: "YKK Zipper", description: "#3 YKK Concealed Separating Zipper", qtyPerUnit: 1, unit: "pcs" },
+        { item: "Hook-and-Eye", description: "Flat dual hook-and-eye closure", qtyPerUnit: 1, unit: "set" },
+        { item: "Interfacing", description: "Medium-weight fusible", qtyPerUnit: 0.2, unit: "m" }
       );
     }
 
-    if (slug === "clasp") {
+    if (slug === "fishnet") {
       base.push(
-        { item: "Invisible zipper", description: "20cm", qtyPerUnit: 1, unit: "pcs" },
-        { item: "Elastic tape (optional)", description: "6mm", qtyPerUnit: 0.4, unit: "m" }
+        { item: "Velvet Piping", description: "1/8\" Matte Velvet Corded Piping", qtyPerUnit: 0.6, unit: "m" },
+        { item: "YKK Zipper", description: "#3 Invisible Non-Separating Zipper", qtyPerUnit: 1, unit: "pcs" },
+        { item: "Boning Strips", description: "Soft flexible plastic boning strips", qtyPerUnit: 4, unit: "pcs" },
+        { item: "Ribbed Hem Band Elastic", description: "High-density woven elastic with stripes", qtyPerUnit: 0.3, unit: "m" }
       );
     }
 
-    if (slug === "aperture") {
+    if (slug === "academic") {
       base.push(
-        { item: "Buttons / Hooks", description: "Back closure", qtyPerUnit: 3, unit: "pcs" },
-        { item: "Horsehair / Boning", description: "For cutout structure", qtyPerUnit: 0.6, unit: "m" }
+        { item: "Grommets", description: "4mm Matte Black Metallic Eyelets (4 pairs)", qtyPerUnit: 8, unit: "pcs" },
+        { item: "Satin Ribbon Lacing", description: "1/4\" Flat Black Satin Ribbon Cord", qtyPerUnit: 1.2, unit: "m" },
+        { item: "Shirt Buttons", description: "11mm Tonal White Matrix Shirt Buttons", qtyPerUnit: 6, unit: "pcs" },
+        { item: "YKK Zipper (Skirt)", description: "#3 YKK Invisible Zipper with Hook-and-Eye", qtyPerUnit: 1, unit: "pcs" },
+        { item: "Lanyard + Badge", description: "Detachable black woven lanyard with clear vinyl ID badge", qtyPerUnit: 1, unit: "pcs" },
+        { item: "Elastic (Cuff)", description: "6mm elasticated cuff band", qtyPerUnit: 0.4, unit: "m" }
       );
     }
 

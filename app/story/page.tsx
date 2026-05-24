@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Our Story | KINFORM",
-  description: "The origin of KINFORM — three designs born from connection, lineage, and the clothes that carry us.",
+  description: "The origin of KINFORM — three designs born from structure, contrast, and the boldness of contemporary clothing.",
 };
 
 export default function StoryPage() {
@@ -17,22 +17,22 @@ export default function StoryPage() {
           KINFORM was born from a simple observation between cousins: the clothes we reach for again and again are the ones that feel like an extension of our own rhythm — familiar in silhouette, quietly surprising in detail.
         </p>
         <p>
-          The three debut pieces — TETHER, CLASP, and APERTURE — each carry a signature gesture: a vertical tie that anchors the front, a waist knot that gathers and releases, a deliberate triangular opening that frames the body. These are not trends. They are recurring motifs across generations of dressing.
+          The three debut pieces — HALTER, FISHNET, and ACADEMIC — each carry a signature gesture: crisscross straps that structure and frame the body, a chevron seam that defines architecture through contrast, and layered tiers that reference uniform and subculture in equal measure. These are not trends. They are statements with construction to match.
         </p>
         <p>
-          We believe contemporary clothing can hold memory without heaviness. That a shirt can feel like a conversation. That a knot can be both functional and tender.
+          We believe contemporary clothing can be bold without losing craft. That a bustier can be both structural and sensual. That a mesh yoke and velvet piping can share the same garment. That an academic uniform can be reimagined as something worth wearing beyond any campus.
         </p>
 
         <h3 className="font-display text-3xl tracking-tight !mt-14 !mb-5 not-prose">The Three Gestures</h3>
 
         <p>
-          <strong>TETHER</strong> — the vertical line that connects collar to hem. A reminder to stay grounded while moving through the world.
+          <strong>HALTER</strong> — the crisscross that holds and frames. Straps that originate from the sides and meet at the neck, creating geometry from structure.
         </p>
         <p>
-          <strong>CLASP</strong> — the waist knot that draws fabric to the body. A small act of care, repeated daily.
+          <strong>FISHNET</strong> — the boundary between sheer and opaque. A chevron seam and velvet piping that mark the line between exposure and coverage.
         </p>
         <p>
-          <strong>APERTURE</strong> — the intentional opening. Space for breath, for light, for the wearer to be seen.
+          <strong>ACADEMIC</strong> — the layered uniform reimagined. Three tiers, a lacing corset, and a ruffled blouse that reference lineage while declaring something entirely new.
         </p>
 
         <p className="pt-6 border-t border-[#D4C9B8] text-[#6F5A47]">

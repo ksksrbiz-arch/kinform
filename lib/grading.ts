@@ -35,38 +35,37 @@ export interface DesignGrading {
  * The founder can later adjust these numbers in the UI or code.
  */
 export const gradingRules: Record<string, DesignGrading> = {
-  tether: {
-    slug: "tether",
+  halter: {
+    slug: "halter",
     baseSize: "M",
     rules: [
-      { measurement: "bust", label: "Bust (Full Circumference)", baseValue: 114, gradeUp: 4.5, gradeDown: 4.5, unit: "cm" },
-      { measurement: "waist", label: "Waist (Full)", baseValue: 112, gradeUp: 4.5, gradeDown: 4.5, unit: "cm" },
-      { measurement: "hip", label: "Hip (Full)", baseValue: 118, gradeUp: 4.5, gradeDown: 4.5, unit: "cm" },
-      { measurement: "length", label: "Center Front Length", baseValue: 72, gradeUp: 1.0, gradeDown: 1.0, unit: "cm" },
-      { measurement: "sleeve", label: "Sleeve Length", baseValue: 26, gradeUp: 0.8, gradeDown: 0.8, unit: "cm" },
-      { measurement: "shoulder", label: "Shoulder Width", baseValue: 52, gradeUp: 1.2, gradeDown: 1.2, unit: "cm" },
+      { measurement: "bust", label: "Bust (Full Circumference)", baseValue: 86, gradeUp: 4.0, gradeDown: 4.0, unit: "cm" },
+      { measurement: "waist", label: "Waist (Full)", baseValue: 72, gradeUp: 4.0, gradeDown: 4.0, unit: "cm" },
+      { measurement: "length", label: "Center Front Length", baseValue: 34, gradeUp: 0.5, gradeDown: 0.5, unit: "cm" },
+      { measurement: "strapLength", label: "Halter Strap Length", baseValue: 42, gradeUp: 1.0, gradeDown: 1.0, unit: "cm" },
+      { measurement: "underwireWidth", label: "Underwire Width", baseValue: 30, gradeUp: 1.0, gradeDown: 1.0, unit: "cm" },
     ],
   },
-  clasp: {
-    slug: "clasp",
+  fishnet: {
+    slug: "fishnet",
     baseSize: "M",
     rules: [
-      { measurement: "bust", label: "Bust (Full)", baseValue: 96, gradeUp: 4.0, gradeDown: 4.0, unit: "cm" },
-      { measurement: "waist", label: "Waist (at knot)", baseValue: 78, gradeUp: 3.5, gradeDown: 3.5, unit: "cm" },
-      { measurement: "hip", label: "Hip (Full)", baseValue: 104, gradeUp: 4.0, gradeDown: 4.0, unit: "cm" },
-      { measurement: "lengthCF", label: "Length (Center Front)", baseValue: 62, gradeUp: 1.0, gradeDown: 1.0, unit: "cm" },
-      { measurement: "lengthCB", label: "Length (Center Back)", baseValue: 66, gradeUp: 1.0, gradeDown: 1.0, unit: "cm" },
+      { measurement: "bust", label: "Bust (Full)", baseValue: 88, gradeUp: 4.0, gradeDown: 4.0, unit: "cm" },
+      { measurement: "waist", label: "Waist", baseValue: 74, gradeUp: 4.0, gradeDown: 4.0, unit: "cm" },
+      { measurement: "length", label: "Total Length", baseValue: 36, gradeUp: 0.5, gradeDown: 0.5, unit: "cm" },
+      { measurement: "mockNeckHeight", label: "Mock-Neck Height", baseValue: 6, gradeUp: 0, gradeDown: 0, unit: "cm" },
+      { measurement: "hemBandWidth", label: "Hem Band Width", baseValue: 5, gradeUp: 0, gradeDown: 0, unit: "cm" },
     ],
   },
-  aperture: {
-    slug: "aperture",
+  academic: {
+    slug: "academic",
     baseSize: "M",
     rules: [
-      { measurement: "bust", label: "Bust (Full)", baseValue: 94, gradeUp: 4.0, gradeDown: 4.0, unit: "cm" },
-      { measurement: "waist", label: "Waist", baseValue: 76, gradeUp: 3.5, gradeDown: 3.5, unit: "cm" },
-      { measurement: "hip", label: "Hip (Full)", baseValue: 102, gradeUp: 4.0, gradeDown: 4.0, unit: "cm" },
-      { measurement: "length", label: "Total Length", baseValue: 86, gradeUp: 1.2, gradeDown: 1.2, unit: "cm" },
-      { measurement: "sleeve", label: "Sleeve Length (from shoulder)", baseValue: 64, gradeUp: 0.8, gradeDown: 0.8, unit: "cm" },
+      { measurement: "blouseBust", label: "Blouse Bust (Full)", baseValue: 96, gradeUp: 4.0, gradeDown: 4.0, unit: "cm" },
+      { measurement: "corsetUnderbust", label: "Corset Underbust", baseValue: 76, gradeUp: 4.0, gradeDown: 4.0, unit: "cm" },
+      { measurement: "corsetLength", label: "Corset Length", baseValue: 24, gradeUp: 0.5, gradeDown: 0.5, unit: "cm" },
+      { measurement: "skirtWaist", label: "Skirt Waist", baseValue: 74, gradeUp: 4.0, gradeDown: 4.0, unit: "cm" },
+      { measurement: "skirtLength", label: "Skirt Length", baseValue: 38, gradeUp: 0.5, gradeDown: 0.5, unit: "cm" },
     ],
   },
 };

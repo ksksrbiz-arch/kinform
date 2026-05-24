@@ -9,7 +9,7 @@ import JSZip from "jszip";
 import { toast } from "sonner";
 
 export function ProductionPacketExporter() {
-  const [selectedSlug, setSelectedSlug] = useState("tether");
+  const [selectedSlug, setSelectedSlug] = useState("halter");
   const [isGenerating, setIsGenerating] = useState(false);
 
   const design = getDesign(selectedSlug)!;

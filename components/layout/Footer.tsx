@@ -20,9 +20,9 @@ export function Footer() {
             <div className="font-medium text-[#2C2722] mb-3 tracking-widest text-xs">EXPLORE</div>
             <div className="space-y-2">
               <Link href="/designs" className="block hover:text-[#B37A5F]">The Collection</Link>
-              <Link href="/designs/tether" className="block hover:text-[#B37A5F]">TETHER</Link>
-              <Link href="/designs/clasp" className="block hover:text-[#B37A5F]">CLASP</Link>
-              <Link href="/designs/aperture" className="block hover:text-[#B37A5F]">APERTURE</Link>
+              <Link href="/designs/halter" className="block hover:text-[#B37A5F]">HALTER</Link>
+              <Link href="/designs/fishnet" className="block hover:text-[#B37A5F]">FISHNET</Link>
+              <Link href="/designs/academic" className="block hover:text-[#B37A5F]">ACADEMIC</Link>
               <Link href="/story" className="block hover:text-[#B37A5F]">Our Story</Link>
             </div>
           </div>
