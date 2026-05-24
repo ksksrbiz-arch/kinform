@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ThemeProvider } from "next-themes";
+import { Analytics } from "@vercel/analytics/next";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -107,6 +108,7 @@ export default function RootLayout({
           <Footer />
           <Toaster position="top-center" richColors closeButton />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
