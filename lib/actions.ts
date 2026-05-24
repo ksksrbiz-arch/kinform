@@ -2,6 +2,9 @@
 
 import { createInquiry, Inquiry } from "./inquiries";
 import { InterestType } from "./designs";
+import { Resend } from "resend";
+
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 /**
  * Server Action called by the public InterestForm.
@@ -33,7 +36,19 @@ export async function submitInquiry(formData: FormData): Promise<{
       source: source?.trim(),
     });
 
-    // In production you could also trigger Resend email here.
+    // Send notification email if Resend is configured
+    if (resend) {
+      try {
+        await resend.emails.send({
+          from: "KINFORM <hello@kinform.studio>",
+          to: ["founder@kinform.studio"], // Change to real email in production
+          subject: `New ${type} — ${name}`,
+          text: `New inquiry from ${name} (${email})\nType: ${type}\nCompany: ${company || "N/A"}\n\n${message || ""}`,
+        });
+      } catch (e) {
+        console.error("Resend notification failed:", e);
+      }
+    }
 
     return {
       success: true,
