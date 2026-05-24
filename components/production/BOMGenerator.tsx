@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { designs, getDesign } from "@/lib/designs";
+import { MaterialCost } from "@/lib/costs";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { toast } from "sonner";
@@ -19,9 +20,18 @@ export function BOMGenerator() {
   const [selectedSlug, setSelectedSlug] = useState("tether");
   const [quantity, setQuantity] = useState(50);
   const [fabric, setFabric] = useState("");
+  const [materialCosts, setMaterialCosts] = useState<MaterialCost[]>([]);
 
   const design = getDesign(selectedSlug)!;
   const currentFabric = fabric || design.suggestedFabrics[0];
+
+  // Fetch real material costs from the database
+  useEffect(() => {
+    fetch("/api/costs/materials")
+      .then(res => res.json())
+      .then(setMaterialCosts)
+      .catch(() => {}); // fail silently if no costs yet
+  }, []);
 
   // Very realistic starter BOMs per design (easy to expand later)
   const getBOM = (slug: string, fabricName: string): BOMLine[] => {
@@ -58,8 +68,26 @@ export function BOMGenerator() {
 
   const bomLines = getBOM(selectedSlug, currentFabric);
 
+  // Helper: find real cost from database
+  const findRealCost = (itemDescription: string) => {
+    return materialCosts.find(c => 
+      itemDescription.toLowerCase().includes(c.materialName.toLowerCase()) ||
+      c.materialName.toLowerCase().includes(itemDescription.toLowerCase())
+    );
+  };
+
+  // Calculate accurate cost using database when available, fallback to estimates
   const totalCostEstimate = bomLines.reduce((sum, line) => {
-    const unitCost = line.item.includes("Fabric") ? 12 : line.item.includes("Button") ? 0.8 : 1.2;
+    const realCost = findRealCost(line.description);
+    let unitCost: number;
+
+    if (realCost) {
+      unitCost = realCost.costPerUnit;
+    } else {
+      // Fallback rough estimates
+      unitCost = line.item.includes("Fabric") ? 12 : 
+                 line.item.includes("Button") ? 0.8 : 1.2;
+    }
     return sum + line.qtyPerUnit * unitCost * quantity;
   }, 0);
 
@@ -163,19 +191,35 @@ export function BOMGenerator() {
               <th>Description</th>
               <th className="text-right">Per Unit</th>
               <th className="text-right">Total for {quantity}</th>
+              <th className="text-right">Unit Cost</th>
             </tr>
           </thead>
           <tbody>
-            {bomLines.map((line, idx) => (
-              <tr key={idx} className="border-b border-[#D4C9B8]/60">
-                <td className="py-2 font-medium">{line.item}</td>
-                <td className="text-[#6F5A47]">{line.description}</td>
-                <td className="text-right tabular-nums">{line.qtyPerUnit} {line.unit}</td>
-                <td className="text-right tabular-nums font-medium">
-                  {(line.qtyPerUnit * quantity).toFixed(1)} {line.unit}
-                </td>
-              </tr>
-            ))}
+            {bomLines.map((line, idx) => {
+              const realCost = findRealCost(line.description);
+              const unitCost = realCost ? realCost.costPerUnit : (line.item.includes("Fabric") ? 12 : line.item.includes("Button") ? 0.8 : 1.2);
+              const source = realCost ? "DB" : "estimate";
+
+              return (
+                <tr key={idx} className="border-b border-[#D4C9B8]/60">
+                  <td className="py-2 font-medium">{line.item}</td>
+                  <td className="text-[#6F5A47]">{line.description}</td>
+                  <td className="text-right tabular-nums">{line.qtyPerUnit} {line.unit}</td>
+                  <td className="text-right tabular-nums font-medium">
+                    {(line.qtyPerUnit * quantity).toFixed(1)} {line.unit}
+                  </td>
+                  <td className="text-right text-xs">
+                    {realCost ? (
+                      <span className="text-green-600 font-medium">
+                        {realCost.currency} {unitCost} <span className="text-[10px]">({source})</span>
+                      </span>
+                    ) : (
+                      <span className="text-[#9A8671]">~${unitCost} (est.)</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -190,7 +234,8 @@ export function BOMGenerator() {
       </div>
 
       <p className="text-xs text-center text-[#9A8671] mt-4">
-        Rough material cost estimate: <span className="font-medium text-[#2C2722]">${totalCostEstimate.toFixed(0)}</span> (update unit costs in code)
+        Estimated material cost: <span className="font-medium text-[#2C2722]">${totalCostEstimate.toFixed(0)}</span> 
+        {materialCosts.length > 0 && " (using real costs from database where available)"}
       </p>
     </div>
   );

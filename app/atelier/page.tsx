@@ -2,6 +2,7 @@ import { TechPackGenerator } from "@/components/techpack/TechPackGenerator";
 import { BOMGenerator } from "@/components/production/BOMGenerator";
 import { SizeGradingTool } from "@/components/production/SizeGradingTool";
 import { LabelPackagingTool } from "@/components/production/LabelPackagingTool";
+import { ProductionPacketExporter } from "@/components/production/ProductionPacketExporter";
 import { ProductionNav } from "@/components/layout/ProductionNav";
 import { getProductionStats } from "@/lib/actions";
 import Link from "next/link";
@@ -56,6 +57,11 @@ export default async function AtelierPage() {
           <Link href="/atelier/costs" className="btn-secondary px-5 py-1.5 text-sm">Cost Database</Link>
         </div>
         <ProductionNav />
+      </div>
+
+      {/* One-Click Full Production Packet */}
+      <div className="mb-8">
+        <ProductionPacketExporter />
       </div>
 
       <div id="techpack">
