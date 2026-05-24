@@ -102,8 +102,8 @@ export const designs: Design[] = [
     name: "CLASP",
     fullName: "The Clasp Top",
     category: "Top",
-    shortDesc: "Sleeveless or cap-sleeve wrap/surplice top with flattering gathered waist knot and asymmetrical hem details. Feminine, drapey, versatile.",
-    longDesc: "The Clasp is pure poetry in motion. A modern surplice wrap silhouette that crosses at the bust and gathers into a signature knot at the waist — creating beautiful shape while remaining incredibly comfortable. The asymmetrical hem adds movement and interest whether worn tucked or loose. Cap sleeves (or sleeveless option) keep it versatile across seasons. Designed to be worn with everything from high-waisted trousers to the matching bottom from the Aperture set.",
+    shortDesc: "Sleeveless (or cap-sleeve) wrap top with a flattering gathered waist knot and asymmetrical hem. Drapey, feminine, and incredibly versatile.",
+    longDesc: "CLASP is our signature everyday essential — a modern surplice wrap top with a beautiful gathered waist knot that flatters and defines. The asymmetrical hem adds movement and interest. Cut in soft, sustainable fabrics (Tencel or organic cotton), it drapes beautifully and feels like a second skin. Wear it with trousers, skirts, or the matching bottom from the Aperture set. This is the piece you’ll reach for on repeat.",
     vibe: "Feminine without fuss. Drapey, flattering, and quietly powerful.",
     keyDetails: [
       "Surplice wrap front with deep V-neckline",
@@ -204,6 +204,7 @@ export const designSlugs = designs.map((d) => d.slug);
  */
 export const interestTypes = [
   "Early Access List",
+  "Pre-Order / First Run",
   "Wholesale Inquiry",
   "Production Collaboration",
   "Press / Media",

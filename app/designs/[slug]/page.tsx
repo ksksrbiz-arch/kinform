@@ -162,6 +162,16 @@ export default function DesignDetail() {
             <Link href="/atelier" className="btn-primary w-full justify-center text-base py-4">Generate Customized Tech Pack for {design.name}</Link>
             <p className="text-center text-xs text-[#9A8671] mt-3">Opens the Atelier tool pre-filled with this design</p>
           </motion.div>
+
+          {/* Pre-Order CTA for CLASP */}
+          {design.slug === "clasp" && (
+            <div className="mt-8 p-6 border border-[#B37A5F] rounded-2xl bg-[#F8F4ED] text-center">
+              <div className="text-[#B37A5F] text-xs tracking-widest mb-1">FIRST SMALL-BATCH RUN</div>
+              <p className="font-medium mb-3">Ready to wear CLASP in the first drop?</p>
+              <Link href="/#clasp-preorder" className="btn-primary text-sm px-8">Join the First Production Run</Link>
+              <p className="text-[10px] text-[#9A8671] mt-2">Made to order • Limited quantities • 6–8 week delivery</p>
+            </div>
+          )}
         </div>
       </div>
 

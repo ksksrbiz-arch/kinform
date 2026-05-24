@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { InterestForm } from "@/components/forms/InterestForm";
 
 export default function KinformHome() {
   return (
@@ -96,6 +97,29 @@ export default function KinformHome() {
         <div className="mt-8 text-center md:hidden">
           <Link href="/designs" className="btn-secondary">View Full Lookbook →</Link>
         </div>
+      </section>
+
+      {/* CLASP — First Small-Batch Pre-Order (Zero-Upfront Launch) */}
+      <section id="clasp-preorder" className="section max-w-3xl mx-auto px-8 text-center border-b border-[#D4C9B8] bg-[#F8F4ED]">
+        <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-2">FIRST PRODUCTION RUN</div>
+        <h2 className="font-display text-5xl md:text-6xl tracking-[-0.03em] mb-4">CLASP — First Small-Batch Drop</h2>
+        
+        <p className="text-lg text-[#6F5A47] max-w-xl mx-auto mb-6 leading-relaxed">
+          Our signature wrap top with a flattering gathered waist knot and asymmetrical hem. 
+          Cut in sustainable fabrics (Tencel or organic cotton options). Made to order in limited quantities.
+        </p>
+
+        <div className="inline-flex items-center gap-2 text-sm bg-white px-4 py-1 rounded-full border border-[#D4C9B8] mb-8">
+          Ships in 6–8 weeks • Only making what’s ordered
+        </div>
+
+        <div className="max-w-md mx-auto">
+          <InterestForm defaultType="Pre-Order / First Run" />
+        </div>
+
+        <p className="text-xs text-[#9A8671] mt-4 tracking-wide">
+          Limited quantities. First run opens soon.
+        </p>
       </section>
 
       {/* Philosophy — Confident & Modern */}
