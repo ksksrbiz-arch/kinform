@@ -121,7 +121,8 @@ export function Header() {
                   </button>
                   <Link href="/designs" className="btn-primary w-full justify-center" onClick={closeMobile}>
                     Explore the Collection
-                  </Link>                </div>
+                  </Link>
+                </div>
               </motion.div>
             </motion.div>
           )}

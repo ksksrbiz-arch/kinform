@@ -32,7 +32,8 @@ export default function CollectionPage() {
               variants={{ hidden: { opacity: 0, y: 40 }, visible: { opacity: 1, y: 0 } }}
               whileHover={{ y: -12 }}
               transition={{ type: "spring", stiffness: 260, damping: 20 }}
-              className="elegant-card bg-white border border-[#D4C9B8] overflow-hidden rounded-3xl h-full flex flex-col hover:border-[#B37A5F] transition-all duration-300"            >
+              className="elegant-card bg-white border border-[#D4C9B8] overflow-hidden rounded-3xl h-full flex flex-col hover:border-[#B37A5F] transition-all duration-300"
+            >
               <div className="aspect-[16/11] bg-[#F1E9DF] relative flex items-center justify-center">
                 <div className="text-center px-8">
                   <div className="text-[10px] tracking-[0.3em] text-[#9A8671] mb-2">0{index + 1} TECHNICAL FLAT</div>
