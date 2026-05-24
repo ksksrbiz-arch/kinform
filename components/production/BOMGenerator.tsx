@@ -21,6 +21,7 @@ export function BOMGenerator() {
   const [quantity, setQuantity] = useState(50);
   const [fabric, setFabric] = useState("");
   const [materialCosts, setMaterialCosts] = useState<MaterialCost[]>([]);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const design = getDesign(selectedSlug)!;
   const currentFabric = fabric || design.suggestedFabrics[0];
@@ -91,7 +92,11 @@ export function BOMGenerator() {
     return sum + line.qtyPerUnit * unitCost * quantity;
   }, 0);
 
-  const downloadCSV = () => {
+  const downloadCSV = async () => {
+    setIsGenerating(true);
+    // Small delay for perceived loading
+    await new Promise(resolve => setTimeout(resolve, 350));
+
     const headers = ["Item", "Description", "Qty per Unit", "Unit", "Total Qty", "Supplier", "Notes"];
     const rows = bomLines.map((line) => [
       line.item,
@@ -111,9 +116,13 @@ export function BOMGenerator() {
     a.download = `KINFORM-${design.name}-BOM-Qty${quantity}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+    setIsGenerating(false);
   };
 
-  const downloadPDF = () => {
+  const downloadPDF = async () => {
+    setIsGenerating(true);
+    await new Promise(resolve => setTimeout(resolve, 450));
+
     const doc = new jsPDF();
     const margin = 18;
     let y = 20;
@@ -225,11 +234,19 @@ export function BOMGenerator() {
       </div>
 
       <div className="flex gap-4">
-        <button onClick={downloadCSV} className="btn-secondary flex-1">
-          Download CSV (Excel ready)
+        <button 
+          onClick={downloadCSV} 
+          disabled={isGenerating}
+          className="btn-secondary flex-1 disabled:opacity-70"
+        >
+          {isGenerating ? "Generating..." : "Download CSV (Excel ready)"}
         </button>
-        <button onClick={downloadPDF} className="btn-primary flex-1">
-          Download BOM PDF
+        <button 
+          onClick={downloadPDF} 
+          disabled={isGenerating}
+          className="btn-primary flex-1 disabled:opacity-70"
+        >
+          {isGenerating ? "Generating..." : "Download BOM PDF"}
         </button>
       </div>
 

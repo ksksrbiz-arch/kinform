@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getDesign, designs } from "@/lib/designs";
 import { TechPackGenerator } from "@/components/techpack/TechPackGenerator";
 import { Modal } from "@/components/ui/Modal";
+import { FlatSketchImage } from "@/components/ui/FlatSketchImage";
 
 import { useParams } from "next/navigation";
 
@@ -36,52 +37,12 @@ export default function DesignDetail() {
         {/* Left: Visual + name — Enhanced */}
         <div className="lg:col-span-3">
           <div className="sticky top-24">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.96, y: 30 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="aspect-[4/3.1] bg-[#F8F4ED] dark:bg-[#252320] rounded-3xl flex items-center justify-center border border-[#D4C9B8] dark:border-[#3A3630] overflow-hidden mb-6 shadow-sm relative"
-            >
-              {/* High-quality animated flat sketch placeholder */}
-              <div className="relative w-full h-full flex items-center justify-center p-6">
-                <svg 
-                  viewBox="0 0 400 300" 
-                  className="w-4/5 h-4/5 text-[#B37A5F]/70 dark:text-[#C48A6E]/70"
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="1.5"
-                >
-                  {/* Simple elegant fashion flat representation - can be replaced with real art */}
-                  <motion.g
-                    initial={{ pathLength: 0, opacity: 0.3 }}
-                    whileInView={{ pathLength: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.8, ease: "easeInOut" }}
-                  >
-                    {/* Collar / Neck */}
-                    <path d="M180 70 Q200 55 220 70" />
-                    {/* Body */}
-                    <path d="M160 80 L240 80 L255 200 L145 200 Z" />
-                    {/* Vertical tie detail (signature element) */}
-                    <path d="M200 85 L200 195" />
-                    <path d="M190 100 Q200 110 210 100" />
-                    <path d="M190 130 Q200 140 210 130" />
-                    {/* Sleeves */}
-                    <path d="M160 85 Q130 100 125 140" />
-                    <path d="M240 85 Q270 100 275 140" />
-                    {/* Waist knot accent */}
-                    <circle cx="200" cy="165" r="8" />
-                    <path d="M193 165 Q200 175 207 165" />
-                  </motion.g>
-                </svg>
-                
-                <div className="absolute bottom-4 text-center">
-                  <div className="font-mono text-[10px] tracking-[0.3em] text-[#9A8671] mb-1">{design.number} — TECHNICAL FLAT</div>
-                  <div className="font-display text-3xl tracking-tight text-[#B37A5F] dark:text-[#C48A6E]">{design.name}</div>
-                </div>
-              </div>
-            </motion.div>
+            {/* Real image support with blur-up + scroll reveal */}
+            <FlatSketchImage 
+              slug={design.slug} 
+              name={design.name} 
+              number={design.number} 
+            />
 
             <div className="text-xs text-[#9A8671] tracking-widest">DETAILS &amp; SPECIFICATIONS BELOW — SCROLL TO GENERATE TECH PACK</div>
           </div>

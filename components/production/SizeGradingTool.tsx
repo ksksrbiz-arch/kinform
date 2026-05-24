@@ -19,6 +19,7 @@ export function SizeGradingTool() {
   const design = getDesign(selectedSlug)!;
 
   const [rules, setRules] = useState(() => getGradingRules(selectedSlug)?.rules || []);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   // Recalculate when slug or rules change
   const gradedData = useMemo(() => {
@@ -40,7 +41,10 @@ export function SizeGradingTool() {
     toast.info("Grading rules reset to defaults");
   };
 
-  const exportCSV = () => {
+  const exportCSV = async () => {
+    setIsGenerating(true);
+    await new Promise(r => setTimeout(r, 300));
+
     const csv = gradedSizesToCSV(selectedSlug, design.fullName);
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
@@ -50,9 +54,13 @@ export function SizeGradingTool() {
     a.click();
     URL.revokeObjectURL(url);
     toast.success("Graded spec CSV downloaded");
+    setIsGenerating(false);
   };
 
-  const exportPDF = () => {
+  const exportPDF = async () => {
+    setIsGenerating(true);
+    await new Promise(r => setTimeout(r, 450));
+
     const doc = new jsPDF();
     const margin = 16;
     let y = 18;
@@ -122,11 +130,19 @@ export function SizeGradingTool() {
 
         <div className="flex-1" />
 
-        <button onClick={exportCSV} className="btn-secondary text-sm">
-          Export CSV
+        <button 
+          onClick={exportCSV} 
+          disabled={isGenerating}
+          className="btn-secondary text-sm disabled:opacity-70"
+        >
+          {isGenerating ? "Generating..." : "Export CSV"}
         </button>
-        <button onClick={exportPDF} className="btn-primary text-sm">
-          Export PDF
+        <button 
+          onClick={exportPDF} 
+          disabled={isGenerating}
+          className="btn-primary text-sm disabled:opacity-70"
+        >
+          {isGenerating ? "Generating..." : "Export PDF"}
         </button>
       </div>
 
