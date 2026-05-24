@@ -10,10 +10,10 @@ import { ThemeToggle } from "./ThemeToggle";
 
 const navLinks = [
   { href: "/designs", label: "Collection" },
+  { href: "/clasp", label: "CLASP" },
   { href: "/story", label: "Story" },
   { href: "/atelier", label: "Atelier" },
   { href: "/request-sample", label: "Samples" },
-  { href: "/wholesale", label: "Wholesale" },
 ];
 
 export function Header() {

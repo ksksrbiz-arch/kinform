@@ -99,6 +99,32 @@ export default function KinformHome() {
         </div>
       </section>
 
+      {/* Multi-piece Pre-Order Teaser */}
+      <section className="section max-w-4xl mx-auto px-8 text-center">
+        <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-2">FIRST PRODUCTION RUN — OPENING SOON</div>
+        <h2 className="font-display text-5xl tracking-[-0.03em] mb-4">Pre-Order the First Drop</h2>
+        <p className="text-[#6F5A47] max-w-lg mx-auto mb-8">
+          We’re only making what’s ordered for our very first small batch. Choose your piece(s) below.
+        </p>
+        
+        <div className="grid md:grid-cols-3 gap-4 mb-8">
+          {[
+            { name: "TETHER", slug: "tether" },
+            { name: "CLASP", slug: "clasp" },
+            { name: "APERTURE", slug: "aperture" },
+          ].map((piece) => (
+            <Link 
+              key={piece.slug}
+              href={`/#${piece.slug}-preorder`}
+              className="block p-6 border border-[#D4C9B8] rounded-2xl hover:border-[#B37A5F] transition-colors"
+            >
+              <div className="font-display text-3xl tracking-tight mb-2">{piece.name}</div>
+              <div className="text-sm text-[#B37A5F]">Join the first run →</div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* CLASP — First Small-Batch Pre-Order (Zero-Upfront Launch) */}
       <section id="clasp-preorder" className="section max-w-3xl mx-auto px-8 text-center border-b border-[#D4C9B8] bg-[#F8F4ED]">
         <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-2">FIRST PRODUCTION RUN</div>
@@ -120,6 +146,30 @@ export default function KinformHome() {
         <p className="text-xs text-[#9A8671] mt-4 tracking-wide">
           Limited quantities. First run opens soon.
         </p>
+      </section>
+
+      {/* TETHER Pre-Order */}
+      <section id="tether-preorder" className="section max-w-3xl mx-auto px-8 text-center border-b border-[#D4C9B8]">
+        <h3 className="font-display text-4xl tracking-tight mb-3">TETHER — First Small-Batch Drop</h3>
+        <p className="text-[#6F5A47] mb-6">
+          The collared shirt with the signature vertical tie detail and waist knot. 
+          Clean, elevated, and made to order in limited quantities.
+        </p>
+        <div className="max-w-md mx-auto">
+          <InterestForm defaultType="Pre-Order / First Run" />
+        </div>
+      </section>
+
+      {/* APERTURE Pre-Order */}
+      <section id="aperture-preorder" className="section max-w-3xl mx-auto px-8 text-center border-b border-[#D4C9B8]">
+        <h3 className="font-display text-4xl tracking-tight mb-3">APERTURE — First Small-Batch Drop</h3>
+        <p className="text-[#6F5A47] mb-6">
+          The bold long-sleeve statement piece with the triangular cutout and dramatic sleeves. 
+          Our most architectural design — made to order.
+        </p>
+        <div className="max-w-md mx-auto">
+          <InterestForm defaultType="Pre-Order / First Run" />
+        </div>
       </section>
 
       {/* Philosophy — Confident & Modern */}
