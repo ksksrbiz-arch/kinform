@@ -7,11 +7,11 @@ export const metadata = {
 
 export default function ApertureLandingPage() {
   return (
-    <div className="max-w-3xl mx-auto px-8 py-16">
+    <div className="max-w-3xl mx-auto px-4 sm:px-8 py-16">
       <div className="text-center mb-12">
         <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-3">FIRST PRODUCTION RUN</div>
-        <h1 className="font-display text-7xl tracking-[-0.04em] mb-4">APERTURE</h1>
-        <p className="text-2xl text-[#6F5A47]">The Bold Statement Piece</p>
+        <h1 className="font-display text-5xl sm:text-7xl tracking-[-0.04em] mb-4">APERTURE</h1>
+        <p className="text-xl sm:text-2xl text-[#6F5A47]">The Bold Statement Piece</p>
       </div>
 
       <div className="prose prose-lg max-w-none text-[#2C2722] mb-10">

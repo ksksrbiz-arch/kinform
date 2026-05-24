@@ -45,6 +45,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Prevent horizontal overflow on small screens */
+  overflow-x: hidden;
 }
 
 body {
@@ -54,7 +56,141 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.2s ease, color 0.2s ease;
+  /* Prevent horizontal overflow on small screens */
+  overflow-x: hidden;
 }
+
+/* ============================================
+   ANIMATIONS & KEYFRAMES
+   ============================================ */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-8px) rotate(1deg); }
+  66%       { transform: translateY(-4px) rotate(-1deg); }
+}
+
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+
+/* Float utility — applied to decorative blobs */
+.animate-float      { animation: float 6s ease-in-out infinite; }
+.animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
+.animate-pulse-soft { animation: pulse-soft 4s ease-in-out infinite; }
+.animate-fade-up    { animation: fade-up 0.7s ease both; }
+
+/* Animated gradient background — used on hero and accent sections */
+.gradient-animated {
+  background: linear-gradient(
+    135deg,
+    #F8F4ED 0%,
+    #F1E9DF 25%,
+    #EDE0D2 50%,
+    #F1E9DF 75%,
+    #F8F4ED 100%
+  );
+  background-size: 300% 300%;
+  animation: gradient-shift 12s ease infinite;
+}
+
+.dark .gradient-animated {
+  background: linear-gradient(
+    135deg,
+    #1A1816 0%,
+    #252320 25%,
+    #2E2A26 50%,
+    #252320 75%,
+    #1A1816 100%
+  );
+  background-size: 300% 300%;
+  animation: gradient-shift 12s ease infinite;
+}
+
+/* Warm gradient overlay for section backgrounds */
+.section-gradient {
+  background: linear-gradient(
+    180deg,
+    var(--bg-cream) 0%,
+    var(--bg-paper) 50%,
+    var(--bg-cream) 100%
+  );
+}
+
+/* Radial glow — placed behind hero text */
+.hero-glow {
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 40%,
+    rgba(179, 122, 95, 0.12) 0%,
+    transparent 70%
+  );
+}
+
+.dark .hero-glow {
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 40%,
+    rgba(196, 138, 110, 0.1) 0%,
+    transparent 70%
+  );
+}
+
+/* Subtle shimmer text effect for brand headings */
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--text-charcoal) 0%,
+    var(--accent-clay) 40%,
+    var(--accent-bronze) 60%,
+    var(--text-charcoal) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+
+/* Decorative floating orb — purely visual, aria-hidden */
+.orb {
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  position: absolute;
+}
+
+.orb-clay {
+  background: rgba(179, 122, 95, 0.15);
+}
+
+.orb-paper {
+  background: rgba(241, 233, 223, 0.5);
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
 
 /* Elegant display typography (Playfair) */
 .font-display {
@@ -71,6 +207,10 @@ h1, h2, .display {
 p, .body {
   font-feature-settings: "kern" "tnum";
 }
+
+/* ============================================
+   INTERACTIVE ELEMENTS
+   ============================================ */
 
 /* Premium link + button foundation */
 a {
@@ -135,6 +275,10 @@ a:hover {
   border-color: var(--accent-taupe);
 }
 
+/* ============================================
+   CARDS & SURFACES
+   ============================================ */
+
 /* Elegant cards for collection */
 .elegant-card {
   background: white;
@@ -168,18 +312,19 @@ a:hover {
   transform: scale(1.035);
 }
 
+/* ============================================
+   LAYOUT
+   ============================================ */
+
 /* Section rhythm */
 .section {
   padding-top: var(--space-6);
   padding-bottom: var(--space-6);
 }
 
-@media (max-width: 768px) {
-  .section {
-    padding-top: var(--space-5);
-    padding-bottom: var(--space-5);
-  }
-}
+/* ============================================
+   FORMS
+   ============================================ */
 
 /* Form elements — warm, refined */
 input, textarea, select {
@@ -190,6 +335,8 @@ input, textarea, select {
   border-radius: 0.5rem;
   transition: border-color 150ms ease, box-shadow 150ms ease;
   font-size: 0.9375rem;
+  /* Prevent iOS zoom on focus */
+  font-size: max(16px, 0.9375rem);
 }
 
 input:focus, textarea:focus, select:focus {
@@ -204,6 +351,10 @@ label {
   letter-spacing: 0.02em;
   color: var(--accent-bronze);
 }
+
+/* ============================================
+   COMPONENTS
+   ============================================ */
 
 /* Modal / Dialog base (used by TechPack + Interest) */
 .modal {
@@ -234,6 +385,31 @@ label {
   background: #3A3630;
 }
 
+/* ============================================
+   RESPONSIVE OVERRIDES
+   ============================================ */
+
+@media (max-width: 768px) {
+  .section {
+    padding-top: var(--space-5);
+    padding-bottom: var(--space-5);
+  }
+}
+
+/* Touch targets — minimum 44×44px for all interactive elements on mobile */
+@media (max-width: 640px) {
+  .btn-primary,
+  .btn-secondary {
+    min-height: 48px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
 /* Accessibility + reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -249,6 +425,10 @@ label {
   outline-offset: 2px;
   border-radius: 2px;
 }
+
+/* ============================================
+   UTILITIES
+   ============================================ */
 
 /* Small utility for image captions in lookbook */
 .image-caption {
@@ -269,3 +449,4 @@ footer {
     display: none !important;
   }
 }
+

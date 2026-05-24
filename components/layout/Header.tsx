@@ -10,9 +10,9 @@ import { ThemeToggle } from "./ThemeToggle";
 
 const navLinks = [
   { href: "/designs", label: "Collection" },
-  { href: "/clasp", label: "CLASP" },
   { href: "/story", label: "Story" },
-  { href: "/atelier", label: "Atelier" },
+  { href: "/atelier/login", label: "Atelier" },
+  { href: "/wholesale", label: "Wholesale" },
   { href: "/request-sample", label: "Samples" },
 ];
 
@@ -104,9 +104,6 @@ export function Header() {
                       {link.label}
                     </Link>
                   ))}
-                  <Link href="/designs" onClick={closeMobile} className="py-1 border-b border-[#D4C9B8]/60">
-                    Collection
-                  </Link>
                 </nav>
 
                 <div className="space-y-3 pt-6 border-t border-[#D4C9B8]">
@@ -124,8 +121,7 @@ export function Header() {
                   </button>
                   <Link href="/designs" className="btn-primary w-full justify-center" onClick={closeMobile}>
                     Explore the Collection
-                  </Link>
-                </div>
+                  </Link>                </div>
               </motion.div>
             </motion.div>
           )}
