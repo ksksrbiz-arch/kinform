@@ -15,7 +15,7 @@ import autoTable from "jspdf-autotable";
 import { toast } from "sonner";
 
 export function SizeGradingTool() {
-  const [selectedSlug, setSelectedSlug] = useState("tether");
+  const [selectedSlug, setSelectedSlug] = useState("halter");
   const design = getDesign(selectedSlug)!;
 
   const [rules, setRules] = useState(() => getGradingRules(selectedSlug)?.rules || []);

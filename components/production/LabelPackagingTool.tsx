@@ -6,7 +6,7 @@ import jsPDF from "jspdf";
 import { toast } from "sonner";
 
 export function LabelPackagingTool() {
-  const [slug, setSlug] = useState("tether");
+  const [slug, setSlug] = useState("halter");
   const design = getDesign(slug)!;
 
   const [brandName, setBrandName] = useState("KINFORM");

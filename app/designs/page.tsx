@@ -10,7 +10,7 @@ export default function CollectionPage() {
       <div className="mb-12">
         <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F]">KINFORM DEBUT 2026</div>
         <h1 className="font-display text-5xl sm:text-7xl md:text-8xl tracking-[-0.04em] mt-1">The Collection</h1>
-        <p className="max-w-md mt-4 text-lg sm:text-xl text-[#6F5A47]">Three signature pieces. Each one a quiet manifesto.</p>
+        <p className="max-w-md mt-4 text-lg sm:text-xl text-[#6F5A47]">Three signature pieces. Each one designed to be worn and noticed.</p>
       </div>
 
       <motion.div 

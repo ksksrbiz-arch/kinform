@@ -11,7 +11,7 @@ interface Props {
 }
 
 export function TechPackGenerator({ initialDesignSlug }: Props) {
-  const [selectedSlug, setSelectedSlug] = useState<DesignSlug>(initialDesignSlug || "tether");
+  const [selectedSlug, setSelectedSlug] = useState<DesignSlug>(initialDesignSlug || "halter");
   const [fabric, setFabric] = useState("");
   const [colorway, setColorway] = useState("");
   const [notes, setNotes] = useState("");

@@ -76,9 +76,9 @@ export default function KinformHome() {
           variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
         >
           {[
-            { name: "TETHER", desc: "Short-sleeve collared shirt with integrated vertical tie detail and waist knot accent.", slug: "tether" },
-            { name: "CLASP", desc: "Sleeveless wrap top with gathered waist knot and asymmetrical hem. Feminine and versatile.", slug: "clasp" },
-            { name: "APERTURE", desc: "Bold long-sleeve statement with triangular cutout, dramatic sleeves, and convertible hem.", slug: "aperture" },
+            { name: "HALTER", desc: "Structured cropped bustier with crisscross halter neck and geometric face-taping across the bodice panels.", slug: "halter" },
+            { name: "FISHNET", desc: "Sheer mesh yoke meets high-contrast sweetheart bodice with velvet chevron piping and sport-inspired hem band.", slug: "fishnet" },
+            { name: "ACADEMIC", desc: "Three-piece anime-academic ensemble: ruffled blouse, front-lacing corset vest, and tiered tartan mini skirt.", slug: "academic" },
           ].map((d, i) => (
             <Link 
               key={i} 
@@ -119,9 +119,9 @@ export default function KinformHome() {
         
         <div className="grid md:grid-cols-3 gap-4 mb-8">
           {[
-            { name: "TETHER", slug: "tether" },
-            { name: "CLASP", slug: "clasp" },
-            { name: "APERTURE", slug: "aperture" },
+            { name: "HALTER", slug: "halter" },
+            { name: "FISHNET", slug: "fishnet" },
+            { name: "ACADEMIC", slug: "academic" },
           ].map((piece) => (
             <Link 
               key={piece.slug}
@@ -135,14 +135,14 @@ export default function KinformHome() {
         </div>
       </section>
 
-      {/* CLASP — First Small-Batch Pre-Order (Zero-Upfront Launch) */}
-      <section id="clasp-preorder" className="section max-w-3xl mx-auto px-4 sm:px-8 text-center border-b border-[#D4C9B8] bg-[#F8F4ED]">
+      {/* HALTER — First Small-Batch Pre-Order */}
+      <section id="halter-preorder" className="section max-w-3xl mx-auto px-4 sm:px-8 text-center border-b border-[#D4C9B8] bg-[#F8F4ED]">
         <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-2">FIRST PRODUCTION RUN</div>
-        <h2 className="font-display text-4xl sm:text-5xl md:text-6xl tracking-[-0.03em] mb-4">CLASP — First Small-Batch Drop</h2>
+        <h2 className="font-display text-4xl sm:text-5xl md:text-6xl tracking-[-0.03em] mb-4">HALTER — First Small-Batch Drop</h2>
         
         <p className="text-lg text-[#6F5A47] max-w-xl mx-auto mb-6 leading-relaxed">
-          Our signature wrap top with a flattering gathered waist knot and asymmetrical hem. 
-          Cut in sustainable fabrics (Tencel or organic cotton options). Made to order in limited quantities.
+          Our debut sculptural bustier with crisscross halter straps and geometric face-taping.
+          Cut in heavy Cotton Crepe or Scuba Knit. Made to order in limited quantities.
         </p>
 
         <div className="inline-flex items-center gap-2 text-sm bg-white px-4 py-1 rounded-full border border-[#D4C9B8] mb-8">
@@ -150,7 +150,7 @@ export default function KinformHome() {
         </div>
 
         <div className="max-w-md mx-auto">
-          <InterestForm defaultType="Pre-Order / First Run" />
+          <InterestForm defaultType="Pre-Order / First Run" piece="HALTER" />
         </div>
 
         <p className="text-xs text-[#9A8671] mt-4 tracking-wide">
@@ -158,27 +158,27 @@ export default function KinformHome() {
         </p>
       </section>
 
-      {/* TETHER Pre-Order */}
-      <section id="tether-preorder" className="section max-w-3xl mx-auto px-4 sm:px-8 text-center border-b border-[#D4C9B8]">
-        <h3 className="font-display text-3xl sm:text-4xl tracking-tight mb-3">TETHER — First Small-Batch Drop</h3>
+      {/* FISHNET Pre-Order */}
+      <section id="fishnet-preorder" className="section max-w-3xl mx-auto px-4 sm:px-8 text-center border-b border-[#D4C9B8]">
+        <h3 className="font-display text-3xl sm:text-4xl tracking-tight mb-3">FISHNET — First Small-Batch Drop</h3>
         <p className="text-[#6F5A47] mb-6">
-          The collared shirt with the signature vertical tie detail and waist knot. 
-          Clean, elevated, and made to order in limited quantities.
+          The sheer mesh yoke and chevron bustier with velvet piping and sport-inspired hem band.
+          Edgy, structured, and made to order in limited quantities.
         </p>
         <div className="max-w-md mx-auto">
-          <InterestForm defaultType="Pre-Order / First Run" piece="TETHER" />
+          <InterestForm defaultType="Pre-Order / First Run" piece="FISHNET" />
         </div>
       </section>
 
-      {/* APERTURE Pre-Order */}
-      <section id="aperture-preorder" className="section max-w-3xl mx-auto px-4 sm:px-8 text-center border-b border-[#D4C9B8]">
-        <h3 className="font-display text-3xl sm:text-4xl tracking-tight mb-3">APERTURE — First Small-Batch Drop</h3>
+      {/* ACADEMIC Pre-Order */}
+      <section id="academic-preorder" className="section max-w-3xl mx-auto px-4 sm:px-8 text-center border-b border-[#D4C9B8]">
+        <h3 className="font-display text-3xl sm:text-4xl tracking-tight mb-3">ACADEMIC — First Small-Batch Drop</h3>
         <p className="text-[#6F5A47] mb-6">
-          The bold long-sleeve statement piece with the triangular cutout and dramatic sleeves. 
-          Our most architectural design — made to order.
+          The anime-academic three-piece ensemble: ruffled blouse, front-lacing corset vest, and tiered tartan mini skirt.
+          A complete statement set, made to order.
         </p>
         <div className="max-w-md mx-auto">
-          <InterestForm defaultType="Pre-Order / First Run" piece="APERTURE" />
+          <InterestForm defaultType="Pre-Order / First Run" piece="ACADEMIC" />
         </div>
       </section>
 
