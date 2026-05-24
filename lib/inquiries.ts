@@ -24,6 +24,14 @@ export interface InquiryTask {
   createdAt: string;
 }
 
+export interface InquiryAttachment {
+  id: string;
+  name: string;
+  type: string;
+  size: number;
+  data: string; // base64
+}
+
 export interface Inquiry {
   id: string;
   createdAt: string; // ISO string
@@ -37,6 +45,7 @@ export interface Inquiry {
   notes?: string;
   followedUpAt?: string;
   tasks?: InquiryTask[];
+  attachments?: InquiryAttachment[];
 }
 
 export interface InquiryFilters {

@@ -16,7 +16,7 @@ export default function WholesalePage() {
       </div>
 
       <div className="bg-white border border-[#D4C9B8] rounded-3xl p-8 md:p-10">
-        <InterestForm defaultType="Wholesale Inquiry" />
+        <InterestForm defaultType="Wholesale Inquiry" allowAttachments />
       </div>
 
       <div className="mt-10 text-sm text-[#6F5A47] border-t border-[#D4C9B8] pt-8 space-y-1">

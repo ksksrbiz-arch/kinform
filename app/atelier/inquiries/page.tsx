@@ -291,6 +291,22 @@ export default function InquiriesDashboard() {
                         Note: {inq.notes.slice(0, 80)}...
                       </div>
                     ) : null}
+
+                    {/* Attachments */}
+                    {inq.attachments && inq.attachments.length > 0 && (
+                      <div className="mt-2 space-y-1">
+                        {inq.attachments.map((att, idx) => (
+                          <a
+                            key={idx}
+                            href={`data:${att.type};base64,${att.data}`}
+                            download={att.name}
+                            className="block text-[10px] text-[#B37A5F] hover:underline"
+                          >
+                            📎 {att.name} ({Math.round(att.size / 1024)} KB)
+                          </a>
+                        ))}
+                      </div>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <button

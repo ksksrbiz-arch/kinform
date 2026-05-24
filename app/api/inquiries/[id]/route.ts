@@ -1,26 +1,19 @@
 import { NextRequest } from "next/server";
 import { updateInquiry, deleteInquiry, addTaskToInquiry, toggleTask, deleteTask, getAllInquiries } from "@/lib/inquiries";
-import { Resend } from "resend";
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+import { sendTaskNotificationEmail } from "@/lib/email";
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const body = await request.json();
 
-  // Handle task actions + notifications
+  // Handle task actions + professional notifications
   if (body.action === "addTask") {
     const updated = await addTaskToInquiry(id, body.description, body.dueDate);
 
-    if (resend && updated) {
+    if (updated) {
       try {
-        await resend.emails.send({
-          from: process.env.RESEND_FROM || "KINFORM <hello@kinform.studio>",
-          to: ["founder@kinform.studio"],
-          subject: `New Task Added for ${updated.name}`,
-          text: `New follow-up task for inquiry from ${updated.name} (${updated.email}):\n\n"${body.description}"\n\nDue: ${body.dueDate || "No date set"}`,
-        });
-      } catch (e) { console.error("Resend task notification failed", e); }
+        await sendTaskNotificationEmail(updated, body.description, "added");
+      } catch (e) { console.error("Task email failed", e); }
     }
 
     return updated ? Response.json(updated) : Response.json({ error: "Not found" }, { status: 404 });
@@ -29,17 +22,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   if (body.action === "toggleTask") {
     const updated = await toggleTask(id, body.taskId);
 
-    if (resend && updated) {
+    if (updated) {
       const task = (updated.tasks || []).find(t => t.id === body.taskId);
       if (task) {
         try {
-          await resend.emails.send({
-            from: process.env.RESEND_FROM || "KINFORM <hello@kinform.studio>",
-            to: ["founder@kinform.studio"],
-            subject: `Task ${task.completed ? "Completed" : "Updated"} — ${updated.name}`,
-            text: `Task "${task.description}" for ${updated.name} has been marked as ${task.completed ? "COMPLETED" : "IN PROGRESS"}.`,
-          });
-        } catch (e) { console.error("Resend task update failed", e); }
+          await sendTaskNotificationEmail(updated, task.description, task.completed ? "completed" : "added");
+        } catch (e) { console.error("Task email failed", e); }
       }
     }
 

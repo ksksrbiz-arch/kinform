@@ -2,9 +2,7 @@
 
 import { createInquiry, Inquiry, getAllInquiries } from "./inquiries";
 import { InterestType } from "./designs";
-import { Resend } from "resend";
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+import { sendNewInquiryEmail } from "./email";
 
 /**
  * Server Action called by the public InterestForm.
@@ -27,6 +25,23 @@ export async function submitInquiry(formData: FormData): Promise<{
       return { success: false, message: "Missing required fields" };
     }
 
+    // Handle file attachments
+    const attachments: any[] = [];
+    for (const [key, value] of formData.entries()) {
+      if (key.startsWith("attachment_") && value instanceof File && value.size > 0) {
+        const buffer = Buffer.from(await value.arrayBuffer());
+        const base64 = buffer.toString("base64");
+
+        attachments.push({
+          id: `att_${Date.now()}_${attachments.length}`,
+          name: value.name,
+          type: value.type,
+          size: value.size,
+          data: base64,
+        });
+      }
+    }
+
     const inquiry = await createInquiry({
       name: name.trim(),
       email: email.trim().toLowerCase(),
@@ -34,20 +49,14 @@ export async function submitInquiry(formData: FormData): Promise<{
       company: company?.trim(),
       message: message?.trim(),
       source: source?.trim(),
+      attachments: attachments.length > 0 ? attachments : undefined,
     });
 
-    // Send notification email if Resend is configured
-    if (resend) {
-      try {
-        await resend.emails.send({
-          from: "KINFORM <hello@kinform.studio>",
-          to: ["founder@kinform.studio"], // Change to real email in production
-          subject: `New ${type} — ${name}`,
-          text: `New inquiry from ${name} (${email})\nType: ${type}\nCompany: ${company || "N/A"}\n\n${message || ""}`,
-        });
-      } catch (e) {
-        console.error("Resend notification failed:", e);
-      }
+    // Send professional HTML email notification
+    try {
+      await sendNewInquiryEmail(inquiry);
+    } catch (e) {
+      console.error("Email notification failed:", e);
     }
 
     return {

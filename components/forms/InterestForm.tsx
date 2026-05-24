@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useState } from "react";
 import { interestTypes, type InterestType } from "@/lib/designs";
 import { toast } from "sonner";
 import { submitInquiry } from "@/lib/actions";
@@ -21,9 +22,10 @@ type FormValues = z.infer<typeof formSchema>;
 interface InterestFormProps {
   onSuccess?: () => void;
   defaultType?: InterestType;
+  allowAttachments?: boolean;
 }
 
-export function InterestForm({ onSuccess, defaultType = "Early Access List" }: InterestFormProps) {
+export function InterestForm({ onSuccess, defaultType = "Early Access List", allowAttachments = false }: InterestFormProps) {
   const {
     register,
     handleSubmit,
@@ -40,6 +42,9 @@ export function InterestForm({ onSuccess, defaultType = "Early Access List" }: I
     },
   });
 
+  const [files, setFiles] = useState<File[]>([]);
+  const [submitted, setSubmitted] = useState(false);
+
   const selectedType = watch("type");
   const showCompany = selectedType === "Wholesale Inquiry" || selectedType === "Production Collaboration";
 
@@ -52,18 +57,40 @@ export function InterestForm({ onSuccess, defaultType = "Early Access List" }: I
     if (data.message) formData.append("message", data.message);
     if (data.source) formData.append("source", data.source);
 
+    // Append files if any
+    files.forEach((file, index) => {
+      formData.append(`attachment_${index}`, file);
+    });
+
     const result = await submitInquiry(formData);
 
     if (result.success) {
-      toast.success(result.message, {
-        description: "We'll be in touch within 48 hours.",
-      });
-      reset();
-      onSuccess?.();
+      if (onSuccess) {
+        // Modal usage
+        toast.success(result.message, { description: "We'll be in touch within 48 hours." });
+        reset();
+        setFiles([]);
+        onSuccess();
+      } else {
+        // Public page usage - show nice inline success
+        setSubmitted(true);
+      }
     } else {
       toast.error(result.message);
     }
   };
+
+  if (submitted) {
+    return (
+      <div className="text-center py-8">
+        <div className="text-5xl mb-4">✨</div>
+        <h3 className="font-display text-2xl tracking-tight">Thank you.</h3>
+        <p className="mt-2 text-[#6F5A47]">
+          Your inquiry has been received. We typically respond within 48 hours.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -111,6 +138,27 @@ export function InterestForm({ onSuccess, defaultType = "Early Access List" }: I
         <label htmlFor="source" className="text-xs">How did you discover KINFORM? (optional)</label>
         <input id="source" {...register("source")} placeholder="Instagram, a friend, press..." className="mt-1.5 w-full" />
       </div>
+
+      {allowAttachments && (
+        <div>
+          <label className="text-xs">Attachments (optional)</label>
+          <input
+            type="file"
+            multiple
+            onChange={(e) => {
+              if (e.target.files) {
+                setFiles(Array.from(e.target.files));
+              }
+            }}
+            className="mt-1.5 w-full text-sm"
+          />
+          {files.length > 0 && (
+            <div className="mt-1 text-xs text-[#6F5A47]">
+              {files.length} file(s) selected
+            </div>
+          )}
+        </div>
+      )}
 
       <button
         type="submit"
