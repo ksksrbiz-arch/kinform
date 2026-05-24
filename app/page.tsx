@@ -109,12 +109,13 @@ export default function KinformHome() {
         </div>
       </section>
 
-      {/* Multi-piece Pre-Order Teaser */}
-      <section className="section max-w-4xl mx-auto px-4 sm:px-8 text-center section-gradient">
-        <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-2">FIRST PRODUCTION RUN — OPENING SOON</div>
-        <h2 className="font-display text-4xl sm:text-5xl tracking-[-0.03em] mb-4">Pre-Order the First Drop</h2>
-        <p className="text-[#6F5A47] max-w-lg mx-auto mb-8">
-          We’re only making what’s ordered for our very first small batch. Choose your piece(s) below.
+      {/* Multi-piece Pre-Order Teaser — Stronger CTA */}
+      <section className="section max-w-5xl mx-auto px-4 sm:px-8 text-center section-gradient">
+        <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-2">LIMITED FIRST PRODUCTION RUN</div>
+        <h2 className="font-display text-4xl sm:text-5xl tracking-[-0.03em] mb-3">The First Drop is Now Open for Pre-Order</h2>
+        <p className="text-[#6F5A47] max-w-lg mx-auto mb-8 text-lg">
+          We’re only producing what’s actually ordered. No waste. No guessing. 
+          Choose your piece and secure your spot in the first small batch.
         </p>
         
         <div className="grid md:grid-cols-3 gap-4 mb-8">
@@ -126,13 +127,17 @@ export default function KinformHome() {
             <Link 
               key={piece.slug}
               href={`/#${piece.slug}-preorder`}
-              className="block p-6 border border-[#D4C9B8] rounded-2xl hover:border-[#B37A5F] transition-colors"
+              className="block p-6 border border-[#D4C9B8] rounded-2xl hover:border-[#B37A5F] hover:bg-white transition-all group"
             >
-              <div className="font-display text-3xl tracking-tight mb-2">{piece.name}</div>
-              <div className="text-sm text-[#B37A5F]">Join the first run →</div>
+              <div className="font-display text-3xl tracking-tight mb-2 group-hover:text-[#B37A5F] transition-colors">{piece.name}</div>
+              <div className="text-sm text-[#B37A5F] font-medium">Pre-order this piece →</div>
             </Link>
           ))}
         </div>
+
+        <p className="text-sm text-[#6F5A47]">
+          All pieces ship together in 6–8 weeks. Limited quantities available.
+        </p>
       </section>
 
       {/* HALTER — First Small-Batch Pre-Order */}
@@ -180,6 +185,26 @@ export default function KinformHome() {
         <div className="max-w-md mx-auto">
           <InterestForm defaultType="Pre-Order / First Run" piece="ACADEMIC" />
         </div>
+      </section>
+
+      {/* Accessories Upsell — Immediate Revenue Driver */}
+      <section className="section max-w-5xl mx-auto px-4 sm:px-8 text-center">
+        <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-2">COMPLETE THE LOOK</div>
+        <h3 className="font-display text-4xl sm:text-5xl tracking-[-0.03em] mb-4">Accessories Now Available</h3>
+        <p className="text-[#6F5A47] max-w-md mx-auto mb-8">
+          Handcrafted statement earrings to pair with your first drop pieces. Ships immediately.
+        </p>
+        
+        <Link 
+          href="/accessories" 
+          className="btn-primary text-base px-10 py-3.5 inline-flex items-center gap-2"
+        >
+          Shop the Earrings Collection →
+        </Link>
+        
+        <p className="text-xs text-[#9A8671] mt-4">
+          12 original designs • Lightweight &amp; comfortable • Perfect for layering
+        </p>
       </section>
 
       {/* Philosophy — Confident & Modern */}
