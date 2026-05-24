@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { ThemeProvider } from "next-themes";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -40,13 +41,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${playfair.variable} ${inter.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-[#F8F4ED] text-[#2C2722]">
-        <Header />
-        <main className="flex-1 pt-20">{children}</main>
-        <Footer />
-        <Toaster position="top-center" richColors closeButton />
-
+    <html lang="en" className={`${playfair.variable} ${inter.variable} h-full antialiased`} suppressHydrationWarning>
+      <body className="min-h-full flex flex-col bg-[#F8F4ED] text-[#2C2722] dark:bg-[#1A1816] dark:text-[#F1E9DF]">
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+          <Header />
+          <main className="flex-1 pt-20">{children}</main>
+          <Footer />
+          <Toaster position="top-center" richColors closeButton />
+        </ThemeProvider>
       </body>
     </html>
   );

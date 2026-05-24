@@ -6,7 +6,7 @@
    ============================================ */
 
 :root {
-  /* Warm neutral palette */
+  /* Warm neutral palette - Light */
   --bg-cream: #F8F4ED;
   --bg-paper: #F1E9DF;
   --text-charcoal: #2C2722;
@@ -30,6 +30,19 @@
   --space-6: 4rem;
 }
 
+/* Dark mode - Sophisticated warm dark for fashion */
+.dark {
+  --bg-cream: #1A1816;
+  --bg-paper: #252320;
+  --text-charcoal: #F1E9DF;
+  --text-deep: #EDE4D7;
+  --accent-taupe: #A38F76;
+  --accent-bronze: #8C6F54;
+  --accent-clay: #C48A6E;
+  --border-subtle: #3A3630;
+  --success: #7A8A6A;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -40,6 +53,7 @@ body {
   color: var(--text-charcoal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Elegant display typography (Playfair) */

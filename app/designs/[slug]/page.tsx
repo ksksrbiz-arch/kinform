@@ -41,20 +41,46 @@ export default function DesignDetail() {
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="aspect-[4/3.1] bg-[#F1E9DF] rounded-3xl flex items-center justify-center border border-[#D4C9B8] overflow-hidden mb-6 shadow-sm relative"
+              className="aspect-[4/3.1] bg-[#F8F4ED] dark:bg-[#252320] rounded-3xl flex items-center justify-center border border-[#D4C9B8] dark:border-[#3A3630] overflow-hidden mb-6 shadow-sm relative"
             >
-              {/* Scroll-triggered reveal for the flat sketch */}
-              <motion.div 
-                initial={{ opacity: 0.3, scale: 0.92, filter: "blur(4px)" }}
-                whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-                className="text-center p-8"
-              >
-                <div className="font-mono text-xs tracking-[0.3em] text-[#9A8671] mb-1">{design.number} — TECHNICAL DRAWING</div>
-                <div className="font-display text-[92px] leading-none tracking-[-0.04em] text-[#B37A5F]/60">{design.name}</div>
-                <p className="mt-4 text-sm max-w-[260px] mx-auto text-[#6F5A47]">Insert your professional flat sketch here<br />(/public/images/{design.slug}/{design.slug}-flat.png)</p>
-              </motion.div>
+              {/* High-quality animated flat sketch placeholder */}
+              <div className="relative w-full h-full flex items-center justify-center p-6">
+                <svg 
+                  viewBox="0 0 400 300" 
+                  className="w-4/5 h-4/5 text-[#B37A5F]/70 dark:text-[#C48A6E]/70"
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="1.5"
+                >
+                  {/* Simple elegant fashion flat representation - can be replaced with real art */}
+                  <motion.g
+                    initial={{ pathLength: 0, opacity: 0.3 }}
+                    whileInView={{ pathLength: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.8, ease: "easeInOut" }}
+                  >
+                    {/* Collar / Neck */}
+                    <path d="M180 70 Q200 55 220 70" />
+                    {/* Body */}
+                    <path d="M160 80 L240 80 L255 200 L145 200 Z" />
+                    {/* Vertical tie detail (signature element) */}
+                    <path d="M200 85 L200 195" />
+                    <path d="M190 100 Q200 110 210 100" />
+                    <path d="M190 130 Q200 140 210 130" />
+                    {/* Sleeves */}
+                    <path d="M160 85 Q130 100 125 140" />
+                    <path d="M240 85 Q270 100 275 140" />
+                    {/* Waist knot accent */}
+                    <circle cx="200" cy="165" r="8" />
+                    <path d="M193 165 Q200 175 207 165" />
+                  </motion.g>
+                </svg>
+                
+                <div className="absolute bottom-4 text-center">
+                  <div className="font-mono text-[10px] tracking-[0.3em] text-[#9A8671] mb-1">{design.number} — TECHNICAL FLAT</div>
+                  <div className="font-display text-3xl tracking-tight text-[#B37A5F] dark:text-[#C48A6E]">{design.name}</div>
+                </div>
+              </div>
             </motion.div>
 
             <div className="text-xs text-[#9A8671] tracking-widest">DETAILS &amp; SPECIFICATIONS BELOW — SCROLL TO GENERATE TECH PACK</div>

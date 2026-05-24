@@ -6,6 +6,7 @@ import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Modal } from "@/components/ui/Modal";
 import { InterestForm } from "@/components/forms/InterestForm";
+import { ThemeToggle } from "./ThemeToggle";
 
 const navLinks = [
   { href: "/designs", label: "Collection" },
@@ -45,6 +46,7 @@ export function Header() {
 
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
+            <ThemeToggle />
             <button
               onClick={() => setShowInterest(true)}
               className="btn-secondary text-sm px-6 py-2.5"
@@ -108,6 +110,9 @@ export function Header() {
                 </nav>
 
                 <div className="space-y-3 pt-6 border-t border-[#D4C9B8]">
+                  <div className="flex justify-center">
+                    <ThemeToggle />
+                  </div>
                   <button
                     onClick={() => {
                       closeMobile();
