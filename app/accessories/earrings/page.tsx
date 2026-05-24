@@ -3,73 +3,78 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { earrings } from "@/lib/earrings";
+import { EarringPhoto } from "@/components/ui/EarringPhoto";
 
 export default function EarringsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-12 pb-20">
-      <div className="mb-12">
-        <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F]">
-          <Link href="/accessories" className="hover:underline">
-            ACCESSORIES
-          </Link>{" "}
+      {/* Refined header */}
+      <div className="mb-10 sm:mb-14">
+        <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-1">
+          <Link href="/accessories" className="hover:underline">ACCESSORIES</Link>{" "}
           / EARRINGS
         </div>
-        <h1 className="font-display text-5xl sm:text-7xl md:text-8xl tracking-[-0.04em] mt-1">
+        <h1 className="font-display text-6xl sm:text-7xl md:text-[84px] tracking-[-0.045em] mt-1 leading-[0.92]">
           Earrings
         </h1>
-        <p className="max-w-lg mt-4 text-lg sm:text-xl text-[#6F5A47]">
-          Twelve curated designs — from botanical sunflowers to abstract paint
-          splashes. Each pair is a small statement.
+        <p className="max-w-md mt-4 text-lg sm:text-xl text-[#6F5A47] dark:text-[#C8B8A3]">
+          Twelve handcrafted statements. Each pair tells its own story — botanical, celestial, playful, or abstract.
         </p>
+        <div className="mt-3 text-xs tracking-[0.2em] text-[#9A8671] dark:text-[#A38F76]">
+          SHIPS IMMEDIATELY • LIGHTWEIGHT • PERFECT WITH THE FIRST DROP
+        </div>
       </div>
 
+      {/* Premium photo grid — dense yet elegant on all screen sizes */}
       <motion.div
-        className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5"
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: "-50px" }}
-        variants={{ visible: { transition: { staggerChildren: 0.06 } } }}
+        viewport={{ once: true, margin: "-80px" }}
+        variants={{ visible: { transition: { staggerChildren: 0.028 } } }}
       >
         {earrings.map((earring, index) => (
           <Link
             key={earring.slug}
             href={`/accessories/earrings/${earring.slug}`}
-            className="group block"
+            className="group block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B37A5F] rounded-3xl"
           >
             <motion.div
               variants={{
-                hidden: { opacity: 0, y: 40 },
+                hidden: { opacity: 0, y: 32 },
                 visible: { opacity: 1, y: 0 },
               }}
-              whileHover={{ y: -8 }}
-              transition={{ type: "spring", stiffness: 260, damping: 20 }}
-              className="elegant-card bg-white border border-[#D4C9B8] overflow-hidden rounded-3xl h-full flex flex-col hover:border-[#B37A5F] transition-all duration-300"
+              whileHover={{ y: -5 }}
+              transition={{ type: "spring", stiffness: 280, damping: 22 }}
+              className="elegant-card bg-white dark:bg-[#1F1C19] border border-[#D4C9B8] dark:border-[#3A3630] overflow-hidden rounded-3xl h-full flex flex-col hover:border-[#B37A5F] dark:hover:border-[#C48A6E] transition-all duration-300"
             >
-              <div className="aspect-square bg-[#F1E9DF] relative flex items-center justify-center">
-                <div className="text-center px-6">
-                  <div className="text-[10px] tracking-[0.3em] text-[#9A8671] mb-2">
-                    {earring.id.toUpperCase()} / EARRING
-                  </div>
-                  <div className="font-display text-5xl sm:text-6xl tracking-[-0.02em] text-[#B37A5F]/70 group-hover:text-[#B37A5F] transition-colors">
-                    {earring.nickname}
-                  </div>
-                </div>
-              </div>
+              {/* Real photography with beautiful reveal + hover scale */}
+              <EarringPhoto
+                primarySrc={earring.photo}
+                secondarySrc={earring.photoSecondary}
+                alt={earring.name}
+                nickname={earring.nickname}
+                aspect="aspect-square"
+                showVariantBadge
+              />
 
-              <div className="p-6 sm:p-8 flex-1 flex flex-col">
-                <div className="flex items-start justify-between mb-2 gap-2">
-                  <h3 className="font-display text-2xl sm:text-3xl tracking-[-0.02em] leading-tight">
-                    {earring.nickname}
-                  </h3>
-                  <span className="text-xs font-mono text-[#9A8671] shrink-0 pt-1">
+              <div className="p-5 sm:p-6 flex-1 flex flex-col">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="font-display text-[21px] sm:text-2xl tracking-[-0.015em] leading-tight">
+                      {earring.nickname}
+                    </h3>
+                    <p className="text-sm text-[#6F5A47] dark:text-[#C8B8A3] mt-1 leading-snug pr-1">
+                      {earring.name.replace(/^The /, "")}
+                    </p>
+                  </div>
+                  <span className="font-mono text-[10px] text-[#9A8671] dark:text-[#A38F76] pt-1 shrink-0 tabular-nums">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                 </div>
-                <p className="text-sm text-[#6F5A47] leading-snug line-clamp-2 flex-1">
-                  {earring.name}
-                </p>
-                <div className="mt-auto pt-4 text-xs tracking-[0.15em] text-[#B37A5F] group-hover:underline">
-                  VIEW DETAILS →
+
+                <div className="mt-auto pt-5 text-[11px] tracking-[0.18em] text-[#B37A5F] dark:text-[#C48A6E] group-hover:underline flex items-center gap-1">
+                  VIEW THIS PAIR <span aria-hidden>→</span>
                 </div>
               </div>
             </motion.div>
@@ -77,13 +82,16 @@ export default function EarringsPage() {
         ))}
       </motion.div>
 
-      <div className="mt-16 text-center text-sm text-[#6F5A47]">
-        All earrings are handcrafted with care.{" "}
+      {/* Footer note + back link */}
+      <div className="mt-16 sm:mt-20 text-center">
+        <p className="text-sm text-[#6F5A47] dark:text-[#C8B8A3]">
+          All pieces are handcrafted in small batches. Lightweight enough for all-day wear.
+        </p>
         <Link
           href="/accessories"
-          className="underline hover:text-[#B37A5F]"
+          className="mt-3 inline-block text-xs tracking-[0.2em] text-[#B37A5F] dark:text-[#C48A6E] hover:underline"
         >
-          Back to all accessories.
+          ← BACK TO ALL ACCESSORIES
         </Link>
       </div>
     </div>

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { InterestForm } from "@/components/forms/InterestForm";
+import { earrings } from "@/lib/earrings";
+import { EarringPhoto } from "@/components/ui/EarringPhoto";
 
 export default function KinformHome() {
   return (
@@ -193,24 +195,48 @@ export default function KinformHome() {
         </div>
       </section>
 
-      {/* Accessories Upsell — Immediate Revenue Driver */}
-      <section className="section max-w-5xl mx-auto px-4 sm:px-8 text-center">
-        <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-2">COMPLETE THE LOOK</div>
-        <h3 className="font-display text-4xl sm:text-5xl tracking-[-0.03em] mb-4">Accessories Now Available</h3>
-        <p className="text-[#6F5A47] max-w-md mx-auto mb-8">
-          Handcrafted statement earrings to pair with your first drop pieces. Ships immediately.
-        </p>
-        
-        <Link 
-          href="/accessories" 
-          className="btn-primary text-base px-10 py-3.5 inline-flex items-center gap-2"
-        >
-          Shop the Earrings Collection →
-        </Link>
-        
-        <p className="text-xs text-[#9A8671] mt-4">
-          12 original designs • Lightweight &amp; comfortable • Perfect for layering
-        </p>
+      {/* Accessories Upsell — Immediate Revenue Driver (now with real photos) */}
+      <section className="section max-w-6xl mx-auto px-4 sm:px-8">
+        <div className="text-center mb-8">
+          <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-1.5">COMPLETE THE LOOK</div>
+          <h3 className="font-display text-4xl sm:text-5xl tracking-[-0.03em]">Accessories Now Available</h3>
+          <p className="text-[#6F5A47] dark:text-[#C8B8A3] max-w-md mx-auto mt-3">
+            Handcrafted statement earrings. Ships immediately. The perfect cash-flow companion to your pre-order garments.
+          </p>
+        </div>
+
+        {/* Visual preview of four standout pieces */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto mb-8">
+          {[earrings[0], earrings[5], earrings[6], earrings[10]].map((e, i) => (
+            <Link key={i} href={`/accessories/earrings/${e.slug}`} className="group block">
+              <div className="overflow-hidden rounded-2xl border border-[#D4C9B8] dark:border-[#3A3630] bg-white dark:bg-[#1F1C19] hover:border-[#B37A5F] transition">
+                <EarringPhoto
+                  primarySrc={e.photo}
+                  secondarySrc={e.photoSecondary}
+                  alt={e.name}
+                  nickname={e.nickname}
+                  aspect="aspect-[4/3]"
+                  showVariantBadge={false}
+                />
+              </div>
+              <div className="mt-2 text-center">
+                <div className="font-medium text-sm tracking-tight">{e.nickname}</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        <div className="text-center">
+          <Link 
+            href="/accessories/earrings" 
+            className="btn-primary text-base px-10 py-3.5 inline-flex items-center gap-2"
+          >
+            Shop All 12 Earrings →
+          </Link>
+          <p className="text-xs text-[#9A8671] dark:text-[#A38F76] mt-4 tracking-wider">
+            12 ORIGINAL DESIGNS • LIGHTWEIGHT • PAIRS BEAUTIFULLY WITH HALTER, FISHNET &amp; ACADEMIC
+          </p>
+        </div>
       </section>
 
       {/* Philosophy — Confident & Modern */}

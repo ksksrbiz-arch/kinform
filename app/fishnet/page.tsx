@@ -40,14 +40,7 @@ export default function FishnetLandingPage() {
         <InterestForm defaultType="Pre-Order / First Run" piece="FISHNET" />
       </div>
 
-      <AccessoriesCrossSell 
-        designName="FISHNET"
-        recommendations={[
-          { name: "Bold Hoops", desc: "Statement scale" },
-          { name: "Textured Drops", desc: "Modern edge" },
-          { name: "Minimal Studs", desc: "Everyday wear" },
-        ]}
-      />
+      <AccessoriesCrossSell designName="FISHNET" />
 
       <div className="mt-10 text-center text-sm text-[#6F5A47]">
         <p className="mb-1">Premium fabrics • Made to order • No waste</p>

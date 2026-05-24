@@ -40,14 +40,7 @@ export default function HalterLandingPage() {
         <InterestForm defaultType="Pre-Order / First Run" piece="HALTER" />
       </div>
 
-      <AccessoriesCrossSell 
-        designName="HALTER"
-        recommendations={[
-          { name: "Architectural Hoops", desc: "Minimal gold-tone hoops" },
-          { name: "Sunburst Studs", desc: "Small statement studs" },
-          { name: "Chain Drops", desc: "Delicate long drops" },
-        ]}
-      />
+      <AccessoriesCrossSell designName="HALTER" />
 
       <div className="mt-10 text-center text-sm text-[#6F5A47]">
         <p className="mb-1">Premium fabrics • Made to order • No waste</p>

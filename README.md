@@ -66,6 +66,29 @@ public/images/
 
 Until you add the real files, the site shows elegant placeholders with the design names.
 
+### 2b. Adding Real Earring Photography (High-Impact Client-Side Polish)
+You provided 16 beautiful product photos for the 12 earring designs (E1–E12 + second angles as E*.2).
+
+**Exact steps:**
+1. From your Windows machine, copy all 16 files from `C:\Users\keith\Downloads\`:
+   - E1.png, E2.jpg, E3.png, E4.png, E5.jpg, E5.2.jpg, E6.png, E6.2.jpg, E7.png, E7.2.jpg, E8.png, E9.png, E9.2.jpg, E10.2.jpg, E11.2.jpg, E12.2.jpg
+
+2. In this project, create (or use) the folder:
+   ```
+   public/images/accessories/earrings/
+   ```
+
+3. Paste / drop the 16 files directly into that folder (keep the original filenames exactly as you labeled them, including the .2 variants).
+
+4. The code in `lib/earrings.ts` already maps every earring to its photo path. The new `EarringPhoto` component + all three key pages (`/accessories/earrings`, detail pages, cross-sell on garment pages, homepage teaser) will immediately display the real photography with beautiful blur-up reveals, hover lifts, and tap-to-switch for the secondary angles.
+
+**Pro tips for even better results later:**
+- For earrings that only have a .2 file right now (E10–E12), you can later add cleaner primary shots as `E10.png`, `E11.png`, `E12.png` and update the paths in `lib/earrings.ts`.
+- The `EarringPhoto` component gracefully falls back to an elegant placeholder if a file is missing — no broken images.
+- All earrings pages now deliver a true premium jewelry-browsing experience on desktop and mobile.
+
+This was one of the highest-leverage remaining pieces for the zero-upfront launch.
+
 ### 3. Set Up the Contact Form (Formspree — 3 minutes)
 1. Go to [formspree.io](https://formspree.io) and create a free account + new form called “KINFORM Interest”.
 2. Copy the form endpoint (e.g. `https://formspree.io/f/abc123`).

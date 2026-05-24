@@ -42,14 +42,7 @@ export default function AcademicLandingPage() {
         <InterestForm defaultType="Pre-Order / First Run" piece="ACADEMIC" />
       </div>
 
-      <AccessoriesCrossSell 
-        designName="ACADEMIC"
-        recommendations={[
-          { name: "Gold Hoops", desc: "Classic with an edge" },
-          { name: "Asymmetric Drops", desc: "Playful & modern" },
-          { name: "Small Studs", desc: "Perfect for the set" },
-        ]}
-      />
+      <AccessoriesCrossSell designName="ACADEMIC" />
 
       <div className="mt-10 text-center text-sm text-[#6F5A47]">
         <p className="mb-1">Premium fabrics • Made to order • No waste</p>
