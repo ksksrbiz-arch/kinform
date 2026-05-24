@@ -7,9 +7,9 @@ export const metadata = {
 
 export default function WholesalePage() {
   return (
-    <div className="max-w-2xl mx-auto px-8 py-16">
+    <div className="max-w-2xl mx-auto px-4 sm:px-8 py-16">
       <div className="mb-10">
-        <h1 className="font-display text-6xl tracking-tight mb-3">Wholesale Application</h1>
+        <h1 className="font-display text-5xl sm:text-6xl tracking-tight mb-3">Wholesale Application</h1>
         <p className="text-xl text-[#6F5A47]">
           Interested in carrying KINFORM in your store? Fill out the form below and we’ll send line sheets, pricing, and order minimums.
         </p>

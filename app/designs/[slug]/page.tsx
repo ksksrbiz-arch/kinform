@@ -22,7 +22,7 @@ export default function DesignDetail() {
   if (!design) return notFound();
 
   return (
-    <div className="max-w-6xl mx-auto px-8 pt-10 pb-24">
+    <div className="max-w-6xl mx-auto px-4 sm:px-8 pt-10 pb-24">
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -57,7 +57,7 @@ export default function DesignDetail() {
             transition={{ duration: 0.5 }}
           >
             <div className="uppercase tracking-[0.2em] text-xs text-[#9A8671]">{design.category}</div>
-            <h1 className="font-display text-7xl tracking-[-0.03em] leading-none mt-1 mb-5">{design.fullName}</h1>
+            <h1 className="font-display text-5xl sm:text-7xl tracking-[-0.03em] leading-none mt-1 mb-5">{design.fullName}</h1>
             <p className="text-xl text-[#6F5A47] leading-snug">{design.longDesc}</p>
           </motion.div>
 
