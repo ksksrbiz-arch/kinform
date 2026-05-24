@@ -23,7 +23,6 @@ export default function CollectionPage() {
             className="elegant-card group block bg-white overflow-hidden border"
           >
             <div className="aspect-[16/11] bg-[#F1E9DF] relative flex items-center justify-center overflow-hidden">
-              {/* Placeholder for flat sketch — replace with real image in /public/images/[slug]/ */}
               <div className="text-center px-8">
                 <div className="text-[10px] tracking-[0.3em] text-[#9A8671] mb-2">0{index + 1} TECHNICAL FLAT</div>
                 <div className="font-display text-6xl tracking-tight text-[#B37A5F]/70 group-hover:text-[#B37A5F] transition-colors">

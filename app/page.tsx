@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function KinformHome() {
   return (
@@ -44,10 +47,19 @@ export default function KinformHome() {
             { name: "CLASP", desc: "Sleeveless wrap top with gathered waist knot and asymmetrical hem. Feminine and versatile.", slug: "clasp" },
             { name: "APERTURE", desc: "Bold long-sleeve statement with triangular cutout, dramatic sleeves, and convertible hem.", slug: "aperture" },
           ].map((d, i) => (
-            <Link key={i} href={`/designs/${d.slug}`} className="elegant-card group block bg-white border p-8 aspect-[4/3.15] flex flex-col justify-end hover:border-[#B37A5F]">
-              <div className="text-[10px] tracking-[0.2em] text-[#9A8671] mb-2">0{i + 1} / SIGNATURE PIECE</div>
-              <h3 className="font-display text-6xl tracking-[-0.02em] mb-4 group-hover:text-[#B37A5F] transition-colors">{d.name}</h3>
-              <p className="text-[#6F5A47] leading-snug max-w-[32ch] pr-4">{d.desc}</p>
+            <Link 
+              key={i} 
+              href={`/designs/${d.slug}`} 
+              className="elegant-card group block bg-white border p-8 aspect-[4/3.15] flex flex-col justify-end hover:border-[#B37A5F] overflow-hidden"
+            >
+              <motion.div 
+                whileHover={{ scale: 1.02 }}
+                className="origin-left"
+              >
+                <div className="text-[10px] tracking-[0.2em] text-[#9A8671] mb-2">0{i + 1} / SIGNATURE PIECE</div>
+                <h3 className="font-display text-6xl tracking-[-0.02em] mb-4 group-hover:text-[#B37A5F] transition-colors">{d.name}</h3>
+                <p className="text-[#6F5A47] leading-snug max-w-[32ch] pr-4">{d.desc}</p>
+              </motion.div>
             </Link>
           ))}
         </div>

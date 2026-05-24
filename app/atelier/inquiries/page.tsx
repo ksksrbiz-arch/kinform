@@ -223,7 +223,18 @@ export default function InquiriesDashboard() {
           {(["new", "contacted", "qualified", "closed"] as InquiryStatus[]).map((status) => {
             const columnInquiries = filtered.filter(i => i.status === status);
             return (
-              <div key={status} className="bg-white border border-[#D4C9B8] rounded-2xl p-4">
+              <div 
+                key={status} 
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const inquiryId = e.dataTransfer.getData("text/plain");
+                  if (inquiryId) {
+                    handleStatusChange(inquiryId, status);
+                  }
+                }}
+                className="bg-white border border-[#D4C9B8] rounded-2xl p-4 transition-colors drag-over:bg-[#F8F4ED]"
+              >
                 <div className="flex items-center justify-between mb-4 px-2">
                   <div className="font-semibold capitalize text-sm tracking-wide">{status}</div>
                   <div className="text-xs px-2 py-0.5 rounded-full bg-[#F1E9DF] text-[#6F5A47]">
@@ -241,6 +252,14 @@ export default function InquiriesDashboard() {
                   {columnInquiries.map((inq) => (
                     <div 
                       key={inq.id}
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData("text/plain", inq.id);
+                        e.currentTarget.style.opacity = "0.6";
+                      }}
+                      onDragEnd={(e) => {
+                        e.currentTarget.style.opacity = "1";
+                      }}
                       onClick={() => {
                         // Quick status change on click for now
                         const statuses: InquiryStatus[] = ["new", "contacted", "qualified", "closed"];
@@ -248,7 +267,7 @@ export default function InquiriesDashboard() {
                         const nextStatus = statuses[(currentIndex + 1) % statuses.length];
                         handleStatusChange(inq.id, nextStatus);
                       }}
-                      className="bg-[#F8F4ED] border border-[#D4C9B8] rounded-xl p-4 cursor-pointer hover:border-[#B37A5F] active:scale-[0.985] transition-all"
+                      className="bg-[#F8F4ED] border border-[#D4C9B8] rounded-xl p-4 cursor-grab active:cursor-grabbing hover:border-[#B37A5F] active:scale-[0.985] transition-all select-none"
                     >
                       <div className="font-medium text-sm">{inq.name}</div>
                       <div className="text-xs text-[#6F5A47] mt-0.5 truncate">{inq.email}</div>

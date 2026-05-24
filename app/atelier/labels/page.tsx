@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { LabelPackagingTool } from "@/components/production/LabelPackagingTool";
 import { ProductionNav } from "@/components/layout/ProductionNav";
 import Link from "next/link";
@@ -11,21 +12,23 @@ export default function LabelsPage() {
       <div className="flex items-center gap-4 mb-8">
         <Link 
           href="/atelier" 
-          className="flex items-center gap-2 text-sm text-[#9A8671] hover:text-[#2C2722]"
+          className="flex items-center gap-2 text-sm text-[#9A8671] hover:text-[#2C2722] group"
         >
-          <ArrowLeft size={16} /> Back to Atelier
+          <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition" /> Back to Atelier
         </Link>
         <ProductionNav />
       </div>
 
-      <div className="mb-8">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <h1 className="font-display text-6xl tracking-[-0.03em]">Label &amp; Packaging Specs</h1>
         <p className="mt-2 text-lg text-[#6F5A47]">
           Generate professional label, care, and packaging specifications for your production partners.
         </p>
-      </div>
+      </motion.div>
 
-      <LabelPackagingTool />
+      <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <LabelPackagingTool />
+      </motion.div>
     </div>
   );
 }
