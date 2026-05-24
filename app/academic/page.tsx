@@ -1,4 +1,5 @@
 import { InterestForm } from "@/components/forms/InterestForm";
+import { AccessoriesCrossSell } from "@/components/ui/AccessoriesCrossSell";
 
 export const metadata = {
   title: "ACADEMIC — First Small-Batch Drop | KINFORM",
@@ -41,7 +42,16 @@ export default function AcademicLandingPage() {
         <InterestForm defaultType="Pre-Order / First Run" piece="ACADEMIC" />
       </div>
 
-      <div className="text-center text-sm text-[#6F5A47]">
+      <AccessoriesCrossSell 
+        designName="ACADEMIC"
+        recommendations={[
+          { name: "Gold Hoops", desc: "Classic with an edge" },
+          { name: "Asymmetric Drops", desc: "Playful & modern" },
+          { name: "Small Studs", desc: "Perfect for the set" },
+        ]}
+      />
+
+      <div className="mt-10 text-center text-sm text-[#6F5A47]">
         <p className="mb-1">Premium fabrics • Made to order • No waste</p>
         <p>Questions? Email <a href="mailto:hello@kinform.studio" className="underline">hello@kinform.studio</a></p>
       </div>

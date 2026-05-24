@@ -1,4 +1,5 @@
 import { InterestForm } from "@/components/forms/InterestForm";
+import { AccessoriesCrossSell } from "@/components/ui/AccessoriesCrossSell";
 
 export const metadata = {
   title: "HALTER — First Small-Batch Drop | KINFORM",
@@ -39,7 +40,16 @@ export default function HalterLandingPage() {
         <InterestForm defaultType="Pre-Order / First Run" piece="HALTER" />
       </div>
 
-      <div className="text-center text-sm text-[#6F5A47]">
+      <AccessoriesCrossSell 
+        designName="HALTER"
+        recommendations={[
+          { name: "Architectural Hoops", desc: "Minimal gold-tone hoops" },
+          { name: "Sunburst Studs", desc: "Small statement studs" },
+          { name: "Chain Drops", desc: "Delicate long drops" },
+        ]}
+      />
+
+      <div className="mt-10 text-center text-sm text-[#6F5A47]">
         <p className="mb-1">Premium fabrics • Made to order • No waste</p>
         <p>Questions? Email <a href="mailto:hello@kinform.studio" className="underline">hello@kinform.studio</a></p>
       </div>

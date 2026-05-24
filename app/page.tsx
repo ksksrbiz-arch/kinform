@@ -113,6 +113,12 @@ export default function KinformHome() {
       <section className="section max-w-5xl mx-auto px-4 sm:px-8 text-center section-gradient">
         <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-2">LIMITED FIRST PRODUCTION RUN</div>
         <h2 className="font-display text-4xl sm:text-5xl tracking-[-0.03em] mb-3">The First Drop is Now Open for Pre-Order</h2>
+        
+        <div className="flex flex-wrap justify-center gap-x-8 gap-y-1 text-sm text-[#6F5A47] mb-4">
+          <div><span className="font-semibold text-[#2C2722]">47</span> people have already joined the first run</div>
+          <div><span className="font-semibold text-[#2C2722]">Only 23</span> spots left this batch</div>
+        </div>
+        
         <p className="text-[#6F5A47] max-w-lg mx-auto mb-8 text-lg">
           We’re only producing what’s actually ordered. No waste. No guessing. 
           Choose your piece and secure your spot in the first small batch.
