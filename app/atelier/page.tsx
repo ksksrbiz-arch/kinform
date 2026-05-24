@@ -112,10 +112,10 @@ export default function AtelierPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           {[
-            { href: "#techpack", icon: Package, title: "Tech Packs", desc: "Generate pro PDFs" },
-            { href: "#bom", icon: Scissors, title: "Bill of Materials", desc: "Accurate costing" },
-            { href: "#grading", icon: Ruler, title: "Size Grading", desc: "Auto-graded specs" },
-            { href: "#labels", icon: Tag, title: "Labels & Pack", desc: "Branding assets" },
+            { href: "/atelier/techpack", icon: Package, title: "Tech Packs", desc: "Generate pro PDFs" },
+            { href: "/atelier/bom", icon: Scissors, title: "Bill of Materials", desc: "Accurate costing" },
+            { href: "/atelier/grading", icon: Ruler, title: "Size Grading", desc: "Auto-graded specs" },
+            { href: "/atelier/labels", icon: Tag, title: "Labels & Pack", desc: "Branding assets" },
             { href: "/atelier/costs", icon: DollarSign, title: "Cost Database", desc: "Supplier pricing" },
             { href: "/atelier/inquiries", icon: Users, title: "Inquiries", desc: "Leads & tasks", highlight: true },
           ].map((tool, index) => (

@@ -19,6 +19,7 @@ export default function InquiriesDashboard() {
   const [editNotes, setEditNotes] = useState("");
   const [taskInput, setTaskInput] = useState<Record<string, string>>({}); // inquiryId -> task description
   const [expandedTasks, setExpandedTasks] = useState<Record<string, boolean>>({});
+  const [view, setView] = useState<"table" | "kanban">("table");
 
   const loadInquiries = async () => {
     setLoading(true);
@@ -150,6 +151,23 @@ export default function InquiriesDashboard() {
         </div>
         <div className="flex items-center gap-4">
           <ProductionNav />
+          
+          {/* View Toggle */}
+          <div className="flex rounded-xl border border-[#D4C9B8] p-1 bg-white">
+            <button 
+              onClick={() => setView("table")}
+              className={`px-4 py-1.5 text-sm rounded-lg transition ${view === "table" ? "bg-[#2C2722] text-white" : "hover:bg-[#F8F4ED]"}`}
+            >
+              Table
+            </button>
+            <button 
+              onClick={() => setView("kanban")}
+              className={`px-4 py-1.5 text-sm rounded-lg transition ${view === "kanban" ? "bg-[#2C2722] text-white" : "hover:bg-[#F8F4ED]"}`}
+            >
+              Kanban
+            </button>
+          </div>
+
           <button onClick={exportCSV} className="btn-secondary">
             Export CSV
           </button>
@@ -198,6 +216,56 @@ export default function InquiriesDashboard() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-12 text-[#9A8671] border border-dashed rounded-xl">
           No inquiries match your filters.
+        </div>
+      ) : view === "kanban" ? (
+        /* Kanban View - Modern & Visual for 16-30 audience */
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {(["new", "contacted", "qualified", "closed"] as InquiryStatus[]).map((status) => {
+            const columnInquiries = filtered.filter(i => i.status === status);
+            return (
+              <div key={status} className="bg-white border border-[#D4C9B8] rounded-2xl p-4">
+                <div className="flex items-center justify-between mb-4 px-2">
+                  <div className="font-semibold capitalize text-sm tracking-wide">{status}</div>
+                  <div className="text-xs px-2 py-0.5 rounded-full bg-[#F1E9DF] text-[#6F5A47]">
+                    {columnInquiries.length}
+                  </div>
+                </div>
+                
+                <div className="space-y-3 min-h-[200px]">
+                  {columnInquiries.length === 0 && (
+                    <div className="text-xs text-[#9A8671] italic px-2 py-8 text-center border border-dashed rounded-xl">
+                      No inquiries
+                    </div>
+                  )}
+                  
+                  {columnInquiries.map((inq) => (
+                    <div 
+                      key={inq.id}
+                      onClick={() => {
+                        // Quick status change on click for now
+                        const statuses: InquiryStatus[] = ["new", "contacted", "qualified", "closed"];
+                        const currentIndex = statuses.indexOf(inq.status);
+                        const nextStatus = statuses[(currentIndex + 1) % statuses.length];
+                        handleStatusChange(inq.id, nextStatus);
+                      }}
+                      className="bg-[#F8F4ED] border border-[#D4C9B8] rounded-xl p-4 cursor-pointer hover:border-[#B37A5F] active:scale-[0.985] transition-all"
+                    >
+                      <div className="font-medium text-sm">{inq.name}</div>
+                      <div className="text-xs text-[#6F5A47] mt-0.5 truncate">{inq.email}</div>
+                      <div className="flex items-center justify-between mt-3">
+                        <div className="text-[10px] text-[#9A8671]">{inq.type}</div>
+                        {inq.tasks && inq.tasks.length > 0 && (
+                          <div className="text-[10px] bg-white px-1.5 rounded text-[#B37A5F]">
+                            {inq.tasks.filter(t => !t.completed).length} open
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       ) : (
         <div className="overflow-x-auto border border-[#D4C9B8] rounded-xl bg-white -mx-2 px-2 md:mx-0 md:px-0">
