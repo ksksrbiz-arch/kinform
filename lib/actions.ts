@@ -1,6 +1,6 @@
 "use server";
 
-import { createInquiry, Inquiry, getAllInquiries } from "./inquiries";
+import { createInquiry, Inquiry, getAllInquiries, getPreOrderStats } from "./inquiries";
 import { InterestType } from "./designs";
 import { sendNewInquiryEmail } from "./email";
 
@@ -20,6 +20,11 @@ export async function submitInquiry(formData: FormData): Promise<{
     const company = (formData.get("company") as string) || undefined;
     const message = (formData.get("message") as string) || undefined;
     const source = (formData.get("source") as string) || undefined;
+
+    // New structured pre-order fields (from enhanced "Build Your Look" form)
+    const piece = (formData.get("piece") as string) || undefined;
+    const accessoriesRaw = formData.get("accessories") as string | null;
+    const selectedAccessories = accessoriesRaw ? accessoriesRaw.split(",").filter(Boolean) : undefined;
 
     if (!name || !email || !type) {
       return { success: false, message: "Missing required fields" };
@@ -50,6 +55,8 @@ export async function submitInquiry(formData: FormData): Promise<{
       message: message?.trim(),
       source: source?.trim(),
       attachments: attachments.length > 0 ? attachments : undefined,
+      piece: piece?.trim(),
+      selectedAccessories,
     });
 
     // Send professional HTML email notification
@@ -76,6 +83,8 @@ export async function submitInquiry(formData: FormData): Promise<{
 /**
  * Get quick stats for the production dashboard.
  */
+export { getPreOrderStats };
+
 export async function getProductionStats() {
   const inquiries = await getAllInquiries();
 

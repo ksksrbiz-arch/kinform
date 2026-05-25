@@ -1,18 +1,32 @@
 import { InterestForm } from "@/components/forms/InterestForm";
 import { AccessoriesCrossSell } from "@/components/ui/AccessoriesCrossSell";
+import { getPreOrderStats } from "@/lib/actions";
+import { SocialProof } from "@/components/preorder/SocialProof";
 
 export const metadata = {
   title: "FISHNET — First Small-Batch Drop | KINFORM",
   description: "Pre-order FISHNET, the precision fishnet & chevron torso piece with sheer mesh yoke, velvet piping, and sport-inspired hem. First production run — made to order.",
 };
 
-export default function FishnetLandingPage() {
+export default async function FishnetLandingPage() {
+  const stats = await getPreOrderStats();
+  const count = stats.pieceCounts["FISHNET"] || 0;
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-8 py-16">
-      <div className="text-center mb-12">
+      <div className="text-center mb-10">
         <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-3">FIRST PRODUCTION RUN</div>
         <h1 className="font-display text-5xl sm:text-7xl tracking-[-0.04em] mb-4">FISHNET</h1>
         <p className="text-xl sm:text-2xl text-[#6F5A47]">The Precision Fishnet & Chevron Torso Piece</p>
+      </div>
+
+      <div className="mb-10">
+        <SocialProof
+          totalPreOrders={stats.totalPreOrders}
+          pieceCounts={{ FISHNET: count }}
+          spotsLeft={stats.spotsLeft}
+          batchLimit={stats.batchLimit}
+          isLoading={false}
+        />
       </div>
 
       <div className="prose prose-lg max-w-none text-[#2C2722] mb-10">
@@ -29,8 +43,8 @@ export default function FishnetLandingPage() {
 
       <div className="bg-white border border-[#D4C9B8] rounded-3xl p-8 md:p-10 mb-12">
         <div className="text-center mb-8">
-          <div className="uppercase tracking-[0.15em] text-xs text-[#B37A5F] mb-2">LIMITED QUANTITIES</div>
-          <h2 className="font-display text-4xl tracking-tight mb-3">Join the First Small-Batch Drop</h2>
+          <div className="uppercase tracking-[0.15em] text-xs text-[#B37A5F] mb-2">LIMITED QUANTITIES — MADE TO ORDER</div>
+          <h2 className="font-display text-4xl tracking-tight mb-3">Secure Your Spot in the First Drop</h2>
           <p className="text-[#6F5A47]">
             We&apos;re only making what&apos;s ordered for our very first production run.<br />
             Ships in 6–8 weeks.

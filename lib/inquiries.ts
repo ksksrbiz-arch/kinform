@@ -46,6 +46,9 @@ export interface Inquiry {
   followedUpAt?: string;
   tasks?: InquiryTask[];
   attachments?: InquiryAttachment[];
+  /** Structured pre-order data (populated by enhanced InterestForm) */
+  piece?: string;                     // e.g. "HALTER"
+  selectedAccessories?: string[];     // earring slugs
 }
 
 export interface InquiryFilters {
@@ -244,5 +247,54 @@ export async function deleteTask(inquiryId: string, taskId: string): Promise<Inq
   inquiries[inquiryIndex].tasks = (inquiries[inquiryIndex].tasks || []).filter(t => t.id !== taskId);
   await saveInquiries(inquiries);
   return inquiries[inquiryIndex];
+}
+
+/**
+ * Public-facing pre-order statistics for social proof and urgency.
+ * Safe to call from Server Components or Server Actions.
+ */
+export async function getPreOrderStats() {
+  const inquiries = await getAllInquiries();
+
+  const preOrders = inquiries.filter(i => i.type === "Pre-Order / First Run");
+
+  const totalPreOrders = preOrders.length;
+
+  // Count by garment piece (from structured field or legacy message parsing)
+  const pieceCounts: Record<string, number> = {};
+  const accessoryCounts: Record<string, number> = {};
+
+  preOrders.forEach(inq => {
+    const piece = inq.piece;
+    if (piece) {
+      pieceCounts[piece] = (pieceCounts[piece] || 0) + 1;
+    } else if (inq.message) {
+      // Legacy fallback: parse from message
+      const match = inq.message.match(/Interested in: ([A-Z]+)/i);
+      if (match) {
+        const legacyPiece = match[1].toUpperCase();
+        pieceCounts[legacyPiece] = (pieceCounts[legacyPiece] || 0) + 1;
+      }
+    }
+
+    // Count accessories chosen with pre-orders
+    if (inq.selectedAccessories) {
+      inq.selectedAccessories.forEach(slug => {
+        accessoryCounts[slug] = (accessoryCounts[slug] || 0) + 1;
+      });
+    }
+  });
+
+  // Limited batch feeling (founder can tune these)
+  const BATCH_LIMIT = 75;
+  const spotsLeft = Math.max(0, BATCH_LIMIT - totalPreOrders);
+
+  return {
+    totalPreOrders,
+    pieceCounts,
+    accessoryCounts,
+    spotsLeft,
+    batchLimit: BATCH_LIMIT,
+  };
 }
 
