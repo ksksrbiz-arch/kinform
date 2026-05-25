@@ -3,13 +3,13 @@
 A clean, premium, fast-loading marketing website and digital lookbook for **KINFORM**, a new contemporary women's clothing line.
 
 **Live features delivered in this MVP:**
-- Beautiful editorial presentation of the three debut designs (TETHER, CLASP, APERTURE)
-- Rich brand story
+- Beautiful editorial presentation of the three debut designs: **HALTER**, **FISHNET**, **ACADEMIC**
+- Real product photography for the 12-piece statement earring accessories collection (ships immediately)
+- Rich brand story + conversion-focused pre-order experience (zero-upfront launch)
 - Fully functional **Tech Pack Generator** that produces professional, downloadable multi-page PDFs with measurements, construction notes, and custom options
 - Working interest / wholesale / production inquiry form (ready for Formspree)
 - Easy single-file content editing for the founder
-- Clear placeholders and instructions for adding your professional flat sketches
-- Elegant warm contemporary aesthetic (Reformation + modern quiet luxury)
+- Elegant warm contemporary aesthetic (Reformation + modern quiet luxury) + premium client-side polish (framer-motion, dark mode, responsive)
 
 ---
 
@@ -44,19 +44,19 @@ This single file controls:
 
 Add a fourth design by copying one of the objects and updating the values + images.
 
-### 2. Add Your Professional Flat Sketches
-The site expects images at these exact paths:
+### 2. Add Your Professional Flat Sketches (Current Designs)
+The site expects images at these exact paths for the current collection:
 
 ```
 public/images/
-├── tether/
-│   └── tether-flat.png          ← your professional flat for Design 01
-├── clasp/
-│   └── clasp-flat.png
-├── aperture/
-│   └── aperture-flat.png
+├── halter/
+│   └── halter-flat.png
+├── fishnet/
+│   └── fishnet-flat.png
+├── academic/
+│   └── academic-flat.png
 └── hero/
-    └── (optional editorial hero image)
+    └── og.jpg   ← recommended for Open Graph / social sharing (1200x630)
 ```
 
 **Recommended specs:**
@@ -64,23 +64,21 @@ public/images/
 - Clean white or cream background preferred (matches the aesthetic)
 - Technical drawing / flat sketch style
 
-Until you add the real files, the site shows elegant placeholders with the design names.
+Until you add the real files, `FlatSketchImage` gracefully falls back to beautiful inline SVG technical drawings. Old `tether/clasp/aperture` folders are historical (empty post-rename).
 
-### 2b. Adding Real Earring Photography (High-Impact Client-Side Polish)
-You provided 16 beautiful product photos for the 12 earring designs (E1–E12 + second angles as E*.2).
+**Note on recent earrings photography (completed):** 16 real product photos now live in `public/images/accessories/earrings/` (E1–E12 + .2 alternates). See `lib/earrings.ts` + `EarringPhoto.tsx` + the full accessories section. Large source PNGs (~2.5MB each) are optimized at runtime by Next.js (AVIF/WebP + responsive sizes). Consider compressing originals before future pushes.
 
-**Exact steps:**
-1. From your Windows machine, copy all 16 files from `C:\Users\keith\Downloads\`:
-   - E1.png, E2.jpg, E3.png, E4.png, E5.jpg, E5.2.jpg, E6.png, E6.2.jpg, E7.png, E7.2.jpg, E8.png, E9.png, E9.2.jpg, E10.2.jpg, E11.2.jpg, E12.2.jpg
+### 2b. Real Earring Photography (Completed — High-Impact Launch Polish)
+16 real product photos for the 12 earring designs (E1–E12 + .2 second angles) are integrated.
 
-2. In this project, create (or use) the folder:
-   ```
-   public/images/accessories/earrings/
-   ```
+**Current state:**
+- All files live in `public/images/accessories/earrings/` (18 files total, ~18MB raw).
+- Fully wired: `lib/earrings.ts` (data + garment recs), `EarringPhoto.tsx` (blur-up, crossfade, interactive, fallback), grid + detail pages, `AccessoriesCrossSell` on HALTER/FISHNET/ACADEMIC, homepage teaser.
+- Ships-immediately cash-flow companion to the zero-upfront garment pre-orders.
 
-3. Paste / drop the 16 files directly into that folder (keep the original filenames exactly as you labeled them, including the .2 variants).
-
-4. The code in `lib/earrings.ts` already maps every earring to its photo path. The new `EarringPhoto` component + all three key pages (`/accessories/earrings`, detail pages, cross-sell on garment pages, homepage teaser) will immediately display the real photography with beautiful blur-up reveals, hover lifts, and tap-to-switch for the secondary angles.
+**Maintenance:**
+- For future variants: add matching .png/.jpg and update `photo`/`photoSecondary` in `lib/earrings.ts`.
+- Large PNG sources: Next.js serves optimized AVIF/WebP versions (see `next.config.ts`). Compress originals (Squoosh / ImageOptim) before git pushes to keep repo lean.
 
 **Pro tips for even better results later:**
 - For earrings that only have a .2 file right now (E10–E12), you can later add cleaner primary shots as `E10.png`, `E11.png`, `E12.png` and update the paths in `lib/earrings.ts`.

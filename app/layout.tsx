@@ -43,13 +43,15 @@ export const metadata: Metadata = {
   keywords: [
     "women's clothing",
     "contemporary fashion",
-    "sustainable clothing",
-    "TETHER",
-    "CLASP",
-    "APERTURE",
+    "KINFORM",
+    "HALTER",
+    "FISHNET",
+    "ACADEMIC",
     "debut collection 2026",
     "made to order",
     "tech pack",
+    "statement earrings",
+    "accessories",
   ],
   authors: [{ name: "KINFORM Studio", url: "https://kinform.studio" }],
   creator: "KINFORM",
@@ -64,13 +66,13 @@ export const metadata: Metadata = {
     siteName: "KINFORM",
     title: "KINFORM — Contemporary Women's Clothing",
     description:
-      "A new language of dressing. TETHER, CLASP, APERTURE. Digital lookbook and atelier tools.",
+      "HALTER, FISHNET, ACADEMIC — three original designs. Contemporary women's clothing, pre-order, and atelier tools. Debut collection 2026.",
     images: [
       {
         url: "/images/hero/og.jpg",
         width: 1200,
         height: 630,
-        alt: "KINFORM Debut Collection 2026",
+        alt: "KINFORM — HALTER, FISHNET, ACADEMIC | Debut Collection 2026",
       },
     ],
   },
@@ -78,7 +80,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "KINFORM — Contemporary Women's Clothing",
     description:
-      "Three original designs. Made to order. Debut collection 2026.",
+      "HALTER, FISHNET, ACADEMIC. Three original designs. Made to order. Debut collection 2026.",
     images: ["/images/hero/og.jpg"],
   },
   robots: {

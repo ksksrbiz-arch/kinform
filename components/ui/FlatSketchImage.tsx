@@ -9,7 +9,7 @@ interface FlatSketchImageProps {
   name: string;
   number: string;
   className?: string;
-  // Optional real image path, e.g. "/images/tether/flat.png"
+  // Optional real image path, e.g. "/images/halter/halter-flat.png" (falls back to elegant SVG if missing)
   src?: string;
 }
 

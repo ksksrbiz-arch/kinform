@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { earrings } from "@/lib/earrings";
 
 const BASE_URL = "https://kinform.studio";
 
@@ -98,5 +99,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "yearly",
       priority: 0.3,
     },
+    // Individual earring detail pages (new accessories vertical, 12 SKUs — added post photo integration)
+    ...earrings.map((e) => ({
+      url: `${BASE_URL}/accessories/earrings/${e.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.65,
+    })),
   ];
 }

@@ -35,10 +35,10 @@ export default async function EarringDetailPage({ params }: PageProps) {
   const prevEarring = currentIndex > 0 ? earrings[currentIndex - 1] : null;
   const nextEarring = currentIndex < earrings.length - 1 ? earrings[currentIndex + 1] : null;
 
-  // Related suggestions: 3 others, avoiding the current one
+  // Related suggestions: 3 others, avoiding the current one (stable/deterministic for static generation)
   const related = earrings
     .filter(e => e.slug !== slug)
-    .sort(() => 0.5 - Math.random())
+    .sort((a, b) => a.id.localeCompare(b.id))
     .slice(0, 3);
 
   return (
