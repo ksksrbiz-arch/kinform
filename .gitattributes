@@ -1,0 +1,11 @@
+# Treat all image assets as binary (prevents broken diffs and large text diffs in git)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.gif binary
+*.svg binary
+
+# The large product photography can be LFS in future if the collection grows
+# public/images/accessories/earrings/** filter=lfs diff=lfs merge=lfs -text
