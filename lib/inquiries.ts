@@ -609,11 +609,13 @@ export async function toggleTask(inquiryId: string, taskId: string): Promise<Inq
   const inquiry = (await getAllInquiries()).find((i) => i.id === inquiryId);
   if (!inquiry) return null;
 
+  const existingTask = (inquiry.tasks || []).find((task) => task.id === taskId);
+  if (!existingTask) return null;
+
   const tasks = (inquiry.tasks || []).map((task) =>
     task.id === taskId ? { ...task, completed: !task.completed } : task
   );
 
-  if (!(inquiry.tasks || []).find((task) => task.id === taskId)) return null;
   return updateInquiry(inquiryId, { tasks });
 }
 
