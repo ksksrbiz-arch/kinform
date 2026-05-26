@@ -210,6 +210,7 @@ export const designSlugs = designs.map((d) => d.slug);
  */
 export const interestTypes = [
   "Early Access List",
+  "Sample Request",
   "Pre-Order / First Run",
   "Wholesale Inquiry",
   "Production Collaboration",

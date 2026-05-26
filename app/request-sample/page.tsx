@@ -16,7 +16,7 @@ export default function RequestSamplePage() {
       </div>
 
       <div className="bg-white border border-[#D4C9B8] rounded-3xl p-8 md:p-10">
-        <InterestForm defaultType="Early Access List" allowAttachments />
+        <InterestForm defaultType="Sample Request" allowAttachments />
       </div>
 
       <div className="mt-8 text-sm text-[#6F5A47] space-y-1 text-center">

@@ -7,7 +7,7 @@ A clean, premium, fast-loading marketing website and digital lookbook for **KINF
 - Real product photography for the 12-piece statement earring accessories collection (ships immediately)
 - Rich brand story + conversion-focused pre-order experience (zero-upfront launch)
 - Fully functional **Tech Pack Generator** that produces professional, downloadable multi-page PDFs with measurements, construction notes, and custom options
-- Working interest / wholesale / production inquiry form (ready for Formspree)
+- Working waitlist + request forms with Vercel Postgres logging
 - Easy single-file content editing for the founder
 - Elegant warm contemporary aesthetic (Reformation + modern quiet luxury) + premium client-side polish (framer-motion, dark mode, responsive)
 
@@ -87,19 +87,14 @@ Until you add the real files, `FlatSketchImage` gracefully falls back to beautif
 
 This was one of the highest-leverage remaining pieces for the zero-upfront launch.
 
-### 3. Set Up the Contact Form (Formspree — 3 minutes)
-1. Go to [formspree.io](https://formspree.io) and create a free account + new form called “KINFORM Interest”.
-2. Copy the form endpoint (e.g. `https://formspree.io/f/abc123`).
-3. Create a file called `.env.local` in the project root (copy from `.env.example`).
-4. Paste your endpoint:
+### 3. Set Up Lead Logging (Vercel Postgres)
+1. In Vercel, open your project → **Storage** → create/connect a Postgres database.
+2. Ensure your project has the Postgres connection variables (`POSTGRES_URL`, etc.) in Environment Variables.
+3. Redeploy (or restart local dev after pulling env vars with `vercel env pull`).
 
-```env
-NEXT_PUBLIC_FORMSPREE_ENDPOINT=https://formspree.io/f/abc123
-```
-
-5. Restart the dev server (`npm run dev`).
-
-Submissions will now go to your email (or wherever you configured in Formspree). Spam protection is included.
+The app auto-creates two tables on first write:
+- `waitlist_entries` for **Early Access List** submissions
+- `inquiry_requests` for **Sample Request**, **Pre-Order**, **Wholesale**, and other request types
 
 ### 4. Changing Brand Name / Tagline
 - The wordmark “KINFORM” appears in `components/layout/Header.tsx` and a few other places.
@@ -136,7 +131,7 @@ Create the following variables in your Vercel project (or `.env.local` locally):
 
 | Variable                          | Required?     | Description |
 |-----------------------------------|---------------|-----------|
-| `NEXT_PUBLIC_FORMSPREE_ENDPOINT`  | Recommended   | Your Formspree form endpoint (e.g. `https://formspree.io/f/xxxxx`) |
+| `POSTGRES_URL`                    | Required      | Vercel Postgres connection string for inquiry + waitlist logging |
 | `PRODUCTION_PASSWORD`             | Strongly recommended | Secret password to access `/atelier` internal tools |
 | `RESEND_API_KEY`                  | Optional      | For sending email notifications on new inquiries |
 | `RESEND_FROM`                     | Optional      | Email address to send from (e.g. `hello@kinform.studio`) |
@@ -192,7 +187,7 @@ Performance, accessibility, and SEO were prioritized from day one.
 ## Need Help?
 
 - For content or image updates: edit `lib/designs.ts` + drop images
-- For form issues: check Formspree dashboard + `.env.local`
+- For form issues: check Vercel Postgres connection env vars + project logs
 - For anything visual or structural: reach out to your developer with this README
 
 This foundation was built with deep respect for the founder’s time and the clothing itself.
