@@ -477,11 +477,11 @@ async function deleteInquiryFromDb(id: string): Promise<boolean> {
 
   if (table === "waitlist_entries") {
     const result = await sql`DELETE FROM waitlist_entries WHERE id = ${id}`;
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   const result = await sql`DELETE FROM inquiry_requests WHERE id = ${id}`;
-  return result.rowCount > 0;
+  return (result.rowCount ?? 0) > 0;
 }
 
 /**
