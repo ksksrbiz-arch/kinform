@@ -9,7 +9,7 @@ import fs from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
 import { sql } from "@vercel/postgres";
-import { InterestType } from "./designs";
+import { interestTypes, InterestType } from "./designs";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const INQUIRIES_FILE = path.join(DATA_DIR, "inquiries.json");
@@ -88,7 +88,7 @@ type DbRow = {
 let dbSchemaEnsured = false;
 
 function normalizeInterestType(type: string): InterestType {
-  return type as InterestType;
+  return interestTypes.includes(type as InterestType) ? (type as InterestType) : "Other";
 }
 
 function mapDbRowToInquiry(row: DbRow): Inquiry {
@@ -215,7 +215,7 @@ async function getAllInquiriesFromDb(): Promise<Inquiry[]> {
 async function createInquiryInDb(data: InquiryInput): Promise<Inquiry> {
   await ensureDbSchema();
 
-  const id = `inq_${Date.now()}_${randomUUID().slice(0, 8)}`;
+  const id = `inq_${randomUUID()}`;
   const createdAt = new Date().toISOString();
 
   if (tableForType(data.type) === "waitlist_entries") {
@@ -337,8 +337,52 @@ async function updateInquiryInDb(id: string, updates: Partial<Inquiry>): Promise
   const table = await getInquiryTable(id);
   if (!table) return null;
 
-  const all = await getAllInquiriesFromDb();
-  const existing = all.find((i) => i.id === id);
+  const existingRow =
+    table === "waitlist_entries"
+      ? await sql<DbRow>`
+          SELECT
+            id,
+            created_at,
+            name,
+            email,
+            'Early Access List'::text AS type,
+            NULL::text AS company,
+            message,
+            source,
+            status,
+            notes,
+            followed_up_at,
+            piece,
+            selected_accessories,
+            tasks,
+            attachments
+          FROM waitlist_entries
+          WHERE id = ${id}
+          LIMIT 1
+        `
+      : await sql<DbRow>`
+          SELECT
+            id,
+            created_at,
+            name,
+            email,
+            type,
+            company,
+            message,
+            source,
+            status,
+            notes,
+            followed_up_at,
+            piece,
+            selected_accessories,
+            tasks,
+            attachments
+          FROM inquiry_requests
+          WHERE id = ${id}
+          LIMIT 1
+        `;
+
+  const existing = existingRow.rows[0] ? mapDbRowToInquiry(existingRow.rows[0]) : null;
   if (!existing) return null;
 
   const merged: Inquiry = {
@@ -484,7 +528,7 @@ export async function createInquiry(data: InquiryInput): Promise<Inquiry> {
   const inquiries = await getAllInquiriesFromFile();
 
   const newInquiry: Inquiry = {
-    id: `inq_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+    id: `inq_${randomUUID()}`,
     createdAt: new Date().toISOString(),
     status: "new",
     ...data,
@@ -584,7 +628,10 @@ export function inquiriesToCSV(inquiries: Inquiry[]): string {
 
   const escape = (val: string) => `"${val}"`;
 
-  return [headers.map(escape).join(","), ...rows.map((row) => row.map((cell) => escape(String(cell))).join(","))].join("\n");
+  return [
+    headers.map(escape).join(","),
+    ...rows.map((row) => row.map((cell) => escape(String(cell))).join(",")),
+  ].join("\n");
 }
 
 // ================== TASKS ==================
