@@ -26,10 +26,14 @@
     "persona:dev": "cd apps/persona-genai && uvicorn kinform_persona.app:app --reload --port 8088",
     "persona:test": "cd apps/persona-genai && python -m pytest -q",
     "persona:install": "cd apps/persona-genai && python -m pip install -r requirements-dev.txt",
+    "openapi:dump": "cd apps/persona-genai && python -m kinform_persona.openapi_dump > openapi.json",
+    "gen:types": "npm run openapi:dump && openapi-typescript apps/persona-genai/openapi.json -o packages/shared/src/generated/persona-api.ts",
+    "gen:types:check": "node infra/github-actions/scripts/check-codegen-drift.mjs",
     "governance:check": "node infra/github-actions/scripts/governance-check.mjs",
     "demo": "python3 scripts/demo_e2e.py"
   },
   "devDependencies": {
+    "openapi-typescript": "^7.13.0",
     "tsx": "^4.22.3",
     "turbo": "^2.3.0"
   },
