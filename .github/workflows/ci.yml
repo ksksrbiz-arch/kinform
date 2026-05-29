@@ -118,19 +118,45 @@ jobs:
 
   # ---------------------------------------------------------------------------
   # Governance checks — guard the campaign + schema state machine.
-  # Activates once `infra/github-actions/scripts/governance-check.mjs` lands
-  # in Phase 4.
+  # Parity between TS and Python enums + branding constants; end-to-end run
+  # of the Polymorphic Bootstrapping Compiler (compile → execute → idempotence
+  # check) using the real compiler source through tsx.
   # ---------------------------------------------------------------------------
   governance:
-    name: governance (campaigns + schema parity)
+    name: governance (campaigns + schema parity + bootstrapper e2e)
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    if: hashFiles('infra/github-actions/scripts/governance-check.mjs') != ''
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: "npm"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
       - run: npm ci
       - run: npm run governance:check
+
+  # ---------------------------------------------------------------------------
+  # PersonaGenAI Python tests + end-to-end demo. Keeps the agentic pipeline
+  # and state machine honest on every PR.
+  # ---------------------------------------------------------------------------
+  persona:
+    name: persona-genai (pytest + e2e demo)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install persona-genai (editable)
+        run: |
+          python -m pip install --upgrade pip
+          cd apps/persona-genai
+          python -m pip install -r requirements-dev.txt
+      - name: Pytest
+        run: cd apps/persona-genai && python -m pytest -q
+      - name: End-to-end demo
+        run: python scripts/demo_e2e.py

@@ -25,9 +25,12 @@
     "db:studio": "npm run prisma:studio --workspace @kinform/torqued-graph",
     "persona:dev": "cd apps/persona-genai && uvicorn kinform_persona.app:app --reload --port 8088",
     "persona:test": "cd apps/persona-genai && python -m pytest -q",
-    "governance:check": "node infra/github-actions/scripts/governance-check.mjs"
+    "persona:install": "cd apps/persona-genai && python -m pip install -r requirements-dev.txt",
+    "governance:check": "node infra/github-actions/scripts/governance-check.mjs",
+    "demo": "python3 scripts/demo_e2e.py"
   },
   "devDependencies": {
+    "tsx": "^4.22.3",
     "turbo": "^2.3.0"
   },
   "engines": {
