@@ -1,164 +1,126 @@
-# KINFORM Autonomous Ecosystem Orchestrator (KINFORM-AEO)
+# KINFORM-AEO — Architecture
 
-> Working title. Renames are deliberately easy — see "Renaming the brand"
-> at the bottom.
+This document captures the load-bearing decisions for the KINFORM Autonomous Ecosystem Orchestrator and the trade-offs behind each one. It is meant to be read top-to-bottom by anyone joining the project.
 
-## What this system is
+---
 
-KINFORM-AEO turns the **KINFORM** physical-digital apparel & jewelry brand
-into an autonomous, governed platform with four integrated components:
+## 1. The thesis
 
-```
-                     ┌────────────────────────────────────┐
-                     │      Payload Studio (Next.js)      │
-                     │ ┌──────────────────────────────┐   │
-                     │ │ Visual file tree / editor    │   │
-                     │ │ Campaign Composer            │   │
-                     │ │ Polymorphic Bootstrapping    │   │
-                     │ │ Compiler  → bootstrap.py     │   │
-                     │ └─────┬──────────────────┬─────┘   │
-                     └───────┼──────────────────┼─────────┘
-                             │                  │
-                  HTTPS (or  │                  │ download
-                  /api/persona proxy)           │
-                             ▼                  ▼
-   ┌─────────────────────────────────┐   ┌────────────────────────────┐
-   │ PersonaGenAI (FastAPI)          │   │ Generated bootstrap.py     │
-   │ ┌───────────┐  ┌───────────┐    │   │ - air-gapped friendly      │
-   │ │BrandVoice │─▶│Compliance │─┐  │   │ - idempotent (SHA-256)     │
-   │ └───────────┘  └───────────┘ │  │   │ - approval-aware staging   │
-   │            ┌──────────────┐  │  │   └────────────────────────────┘
-   │            │  Analytics   │◀┘  │
-   │            └─────┬────────┘    │
-   │       Supervisor / router      │
-   │       (LangGraph w/ fallback)  │
-   └────────┬───────────────────────┘
-            │ persist via SQLAlchemy
-            ▼
-   ┌─────────────────────────────────┐
-   │ Torqued Graph (Prisma + SQLA)   │
-   │   Product (physicalId)          │
-   │   AffiliateProfile              │
-   │   TorquedAffiliation (junction) │
-   │   RevenueEvent                  │
-   │   Campaign + ValidationLog      │
-   │   Drop                          │
-   └─────────────────────────────────┘
-            ▲
-            │
-   ┌────────┴──────────────────────────────────┐
-   │ Governance Pipeline (GitHub Actions)      │
-   │ - Imports kinform_shared.governance       │
-   │ - Validates every committed campaign      │
-   │ - Requires approval on pushes to main     │
-   │ - Runs PersonaGenAI test suite            │
-   │ - Runs Compiler tests (executes the .py)  │
-   └───────────────────────────────────────────┘
-```
+KINFORM is built around **Torqued Affiliation™**: a physical garment or accessory is not the endpoint of a sale, it is the *entry point* into a bipartite revenue graph.
 
-## Key design decisions
+- **Physical nodes** — every produced unit has a `physicalId` (QR/NFC). Scans become events.
+- **Digital nodes** — affiliates (customers who opt in to wearing-as-marketing) hold profiles with payout configuration.
+- **Edges** — `TorquedAffiliation` rows connect products to affiliates, weighted and time-bounded.
+- **Events** — scans, attributed purchases, and pass-throughs become `RevenueEvent` rows that drive payouts.
 
-### 1. The governance rules are shared code, not just docs.
+Everything else in the system exists to safely generate content, validate it, attach it to the graph, and deploy it.
 
-`packages/shared` ships both a Python and a TypeScript implementation of the
-exact same checks, with a single `GOVERNANCE_RULES_VERSION` constant. The
-FastAPI service, the Payload Studio's client-side pre-flight, the
-Polymorphic Bootstrapping Compiler header, and the GitHub Actions pipeline
-all reference the same module. There is no "drift" — there is exactly one
-truth.
+---
 
-Trade-off: dual-implementation cost. Mitigated by `rules_version` mismatch
-checks in CI and in the generated `.py` script.
+## 2. Repository shape — why a monorepo, why npm workspaces + Turborepo
 
-### 2. The Campaign lifecycle is enforced *in code*, not by convention.
+We chose a single repo with `npm workspaces` over multiple repos because:
 
-`app/simulation.py` is the **only** module that writes the `Campaign`
-table. A campaign is born in `simulation`; the only path forward is
-`promote(approve)`, which re-runs governance with the human-gate enabled
-and refuses to advance if the latest `ValidationLog` is not OK. Two
-approvals are required: `simulation → approved → production`. Direct
-manipulation requires editing the database, which CI also checks.
+- The storefront, IDE, and agentic service all consume the same TypeScript types from `packages/torqued-graph` and the same governance rules from `packages/shared`. Cross-repo PRs would be the dominant unit of change.
+- npm workspaces are already the package manager of the existing storefront. No tooling migration tax.
+- The Python service (`apps/persona-genai`) is *not* a JS workspace — it lives in the monorepo as a sibling app with its own `pyproject.toml`. It consumes `packages/torqued-graph/python/` as a local-path Python dependency, mirroring the Prisma schema.
 
-### 3. The Torqued Graph is bipartite by design.
+**Turborepo on top.** `turbo.json` declares explicit `inputs` and `outputs` per task so the cache key is precise (no over-invalidation, no missed invalidation):
 
-Physical products carry a `physicalId` (QR/NFC payload) and are first-class
-nodes. Affiliates are the other half. The `TorquedAffiliation` junction
-carries `sharePermille` (parts per thousand — integer math, no floating
-point in payouts). On every scan, `RevenueEvent.splitJson` snapshots the
-*current* split as a denormalised JSON so historical payouts remain
-reproducible if shares are later rebalanced.
+- `db:generate` is a *proper cached task* — input is just `prisma/schema.prisma`, output is `prisma/generated/**`. Re-runs only when the schema changes.
+- `build`, `lint`, `typecheck`, and `test` declare `env` arrays so any environment-variable change participates in the cache key (`NEXT_PUBLIC_*`, `DATABASE_URL`, `KINFORM_LLM_PROVIDER`, etc.).
+- `dev` and `start` are marked `persistent: true` (no cache) so Turbo treats them as long-running processes.
+- `^build` dependencies wire up package-graph ordering: `@kinform/shared` depends on `@kinform/torqued-graph`, so building or typechecking `shared` waits for `torqued-graph`'s `db:generate` output.
 
-### 4. The Bootstrapping Compiler is "Polymorphic".
+**Vercel Remote Cache is enabled.** Even though Vercel may not be the deploy target for every workspace, the remote cache is free to use and makes CI builds ~zero-cost after the first warm run. Wire it by setting `TURBO_TOKEN` (secret) and `TURBO_TEAM` (variable) in the repo settings. Signed artifacts (`TURBO_REMOTE_CACHE_SIGNATURE_KEY`) prevent a compromised cache from injecting builds.
 
-The compiler emits **Python source code**, not just data. The same payload
-can be re-rendered into different runtimes (Bash, Node, container image)
-without changing the upstream IDE — the IDE only knows about the abstract
-artifact. v1 ships Python because Python is the most likely environment a
-KINFORM operator will already have on a 2026 laptop.
+**CI uses `turbo prune`.** The `storefront` job in `.github/workflows/ci.yml` runs `turbo prune --scope=@kinform/storefront --docker`, then `npm ci` inside the pruned subset. This keeps CI install times bounded to a single app's transitive dependency tree, and the same pattern works for serverless/Docker deploys later.
 
-### 5. LangGraph is optional.
+**Trade-off:** root `node_modules` grows. Acceptable; the remote cache and pruned installs mitigate it everywhere it matters.
 
-The supervisor tries to import LangGraph; if it fails (or the runtime is
-air-gapped), the in-process deterministic state machine runs instead.
-**Outputs are identical.** This means the bootstrapped script can carry
-the entire orchestration logic with zero third-party deps.
+---
 
-### 6. Human-in-the-loop is the default.
+## 3. Data layer (`packages/torqued-graph`)
 
-No campaign reaches `production` without **two** explicit
-`POST /campaigns/approve` calls by a named human, and the second call
-is gated on a fresh `ValidationLog`. The Payload Studio's "Production
-only" compile toggle additionally refuses to compile if any embedded file
-lacks `approved=true`.
+Single source of truth for the schema is **Prisma**. SQLAlchemy is a *generated-by-convention* mirror, hand-kept in lock-step and asserted in CI.
 
-### 7. Auditability over throughput.
+| Concern | Decision |
+| --- | --- |
+| Primary ORM | Prisma (Next.js + serverless friendly) |
+| Python ORM | SQLAlchemy 2.x with `DeclarativeBase` |
+| Default driver | SQLite (`file:./prisma/dev.db`) for zero-config dev |
+| Production driver | Postgres (Vercel Postgres compatible) |
+| ID type | `String @id @default(cuid())` — portable, URL-safe, no Postgres-only types |
+| Money | Integer minor units (cents) — never floats |
+| Timestamps | `createdAt @default(now())`, `updatedAt @updatedAt` |
+| Enums | Defined as `enum` in Prisma and as `str, Enum` in Python so values are wire-identical |
 
-`RevenueEvent` records every scan; `ValidationLog` records every
-governance run (including the CI ones). Append-only. The bootstrap script
-re-emits the embedded ruleset and prints structured per-file actions.
+**Why dual ORMs at all?** The agentic service writes campaigns and validation logs from Python; the storefront and Studio read/write from TypeScript. Going through a JSON RPC for every write would add latency to the hot path of governance and produce inconsistent constraint enforcement. Two ORMs against one schema, with CI checking parity, is cheaper to operate.
 
-## End-to-end flow
+**Core models** (see [packages/torqued-graph/prisma/schema.prisma](packages/torqued-graph/prisma/schema.prisma)):
+
+- `Product` — physical SKU, has `physicalId` (QR/NFC), price, drop reference.
+- `Drop` — a release (e.g. `HALTER`, `FISHNET`, `ACADEMIC`) grouping products.
+- `AffiliateProfile` — human or organisation that earns through wearing/sharing.
+- `TorquedAffiliation` — junction: which affiliate is bonded to which product, with weight and lifecycle.
+- `RevenueEvent` — append-only ledger of scans/attributed purchases. Drives payouts.
+- `Campaign` — generated marketing content with strict status state machine.
+- `ValidationLog` — per-agent verdicts on a campaign. Append-only, auditable.
+
+---
+
+## 4. PersonaGenAI (`apps/persona-genai`) — Phase 2
+
+**Stack:** Python 3.11+, FastAPI, LangGraph, Pydantic v2, SQLAlchemy 2, `httpx`.
+
+**Agents:**
+
+1. **Brand Voice Agent** — drafts copy that fits KINFORM voice, enforces ≤140 chars and required hashtags.
+2. **Compliance Agent** — checks claims, banned terms, mandatory CTAs, and brand-name correctness.
+3. **Analytics Agent** — scores predicted engagement and target-channel fit.
+4. **Supervisor / router** — sequences the three, escalates conflicts, finalises a verdict.
+
+**LLM provider:** swappable behind a `LLMProvider` interface. Default is `StubProvider` — deterministic, seedable, produces structurally valid KINFORM-style output. Real providers (OpenAI, Anthropic) plug in by setting `KINFORM_LLM_PROVIDER` and a key. CI runs the stub.
+
+**State machine** (enforced by Prisma enum + Pydantic):
 
 ```
-Payload Studio: Composer → "Simulate"
-  → POST /campaigns/simulate
-  → BrandVoice draft
-  → Compliance auto-injects required hashtags + validates
-  → Analytics scores
-  → Persist (stage=simulation) + ValidationLog row
-Payload Studio: "Approve → Production"
-  → POST /campaigns/approve (×2)
-  → stage flips simulation → approved → production
-  → Composer writes /campaigns/<slug>.json with approved=true
-Payload Studio: "Compile & Download Bootstrapper"
-  → lib/compiler.ts collects VFS, b64-encodes, embeds in PY_TEMPLATE
-  → bootstrap.py downloaded
-  → Run `python bootstrap.py --target ./project` anywhere
-Governance CI:
-  → On PR: validates every campaign JSON (no approval required)
-  → On main: same, but --require-approval (any unapproved → fail)
-  → On PR/main: runs PersonaGenAI test suite + Compiler tests
+DRAFT  ─▶  SIMULATION  ─▶  AWAITING_APPROVAL  ─▶  APPROVED  ─▶  PUBLISHED
+                  │                  │                │
+                  └──▶ REJECTED ◀────┴────────────────┘
 ```
 
-## Renaming the brand
+Promotion from `AWAITING_APPROVAL` to `APPROVED` *requires* a human approver token recorded in `Campaign.approvedBy`. No code path bypasses this.
 
-The string "KINFORM" appears in only three categories of place:
+---
 
-1. `packages/shared/.../governance.py` and `.../governance.ts` — exported
-   `BRAND_NAME` and `REQUIRED_HASHTAGS`. Edit, bump
-   `GOVERNANCE_RULES_VERSION`, run CI.
-2. Marketing copy in `apps/payload-studio` UI labels.
-3. Documentation.
+## 5. Payload Studio (`apps/payload-studio`) — Phase 3
 
-No class names, table names, or model names reference the brand. Renaming
-is a search-and-replace operation, not a refactor.
+Next.js 16, App Router, TypeScript, Tailwind 4.
 
-## Future hooks
+- A virtual filesystem (Zustand-backed) holds campaigns, governance rules, product schemas, and assets as in-memory tree nodes.
+- The **Polymorphic Bootstrapping Compiler** serialises the entire workspace state to JSON, base64-encodes it, and embeds it inside a self-contained Python script with idempotent write logic and structured logging. The output runs on any machine with Python 3.9+ and no network access.
+- A "Compile & Download Bootstrapper" button is **disabled** when any embedded campaign is not in status `APPROVED` or `PUBLISHED`. This is the IDE's governance gate.
 
-- **Real LLM in Brand Voice** — set `KINFORM_LLM_PROVIDER=openai`.
-- **NFC reader integration** — POST to `/revenue/scan` from a serverless
-  endpoint near the reader; the split JSON is already standard.
-- **Multiple bootstrap targets** — implement another `PY_TEMPLATE`-style
-  template in `lib/compiler.ts` and add a target selector in the UI.
-- **Postgres** — set `DATABASE_URL=postgres://…`; both ORMs already
-  support it.
+---
+
+## 6. Governance pipeline (`infra/github-actions`) — Phase 4
+
+GitHub Actions workflow that runs on PRs touching campaigns, schemas, or governance rules:
+
+- Lints campaigns against `packages/shared` rules (length, hashtags, CTAs).
+- Verifies that any campaign promoted to `APPROVED` in the diff has a matching `ValidationLog` entry with an approver identity.
+- Asserts Prisma ↔ SQLAlchemy schema parity.
+- Blocks merge if any check fails. No `--no-verify` escape hatch.
+
+---
+
+## 7. Renaming KINFORM
+
+The brand name is still a working title. To rename:
+
+1. Edit `packages/shared/src/branding.ts` (single source of truth — name, hashtag, CTA tokens).
+2. Run `npm run lint` — TypeScript references update via import; Pydantic schemas pick it up via `kinform_shared.branding`.
+3. Update repo name and Vercel project. Done.
+
+No string-replace across the codebase is needed for the *system* name. Marketing copy in `MARKETING-CAPTIONS.md` and product photography paths are intentionally kept as separate files so they can be redone.

@@ -1,0 +1,5 @@
+# Editable installs of the in-repo Python packages, then this app itself.
+# Run from this directory:  pip install -r requirements-dev.txt
+-e ../../packages/shared/python
+-e ../../packages/torqued-graph/python
+-e .[dev]

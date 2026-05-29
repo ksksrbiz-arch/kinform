@@ -1,86 +1,112 @@
 "use client";
 
-import type { TreeNode } from "@/lib/vfs";
+import { useState } from "react";
 
-interface Props {
-  root: TreeNode;
-  activePath: string | null;
-  onSelect: (path: string) => void;
-  onDelete: (path: string) => void;
-}
+import { useStudio } from "@/lib/store";
 
-function Node({
-  node,
-  depth,
-  activePath,
-  onSelect,
-  onDelete,
-}: {
-  node: TreeNode;
-  depth: number;
-} & Pick<Props, "activePath" | "onSelect" | "onDelete">) {
-  const isFile = !!node.file;
-  const active = node.path === activePath;
+export default function FileTree() {
+  const files = useStudio((s) => s.files);
+  const active = useStudio((s) => s.activePath);
+  const setActive = useStudio((s) => s.setActive);
+  const createFile = useStudio((s) => s.createFile);
+  const deleteFile = useStudio((s) => s.deleteFile);
+
+  const [newPath, setNewPath] = useState("");
+
   return (
-    <div>
-      <div
-        className={`flex items-center gap-2 px-1 py-0.5 rounded text-sm ${
-          active ? "bg-kinform-torque/20 text-kinform-torque" : "text-white/80"
-        } ${isFile ? "cursor-pointer hover:bg-white/5" : "text-white/60"}`}
-        style={{ paddingLeft: depth * 12 + 4 }}
-        onClick={() => isFile && onSelect(node.path)}
+    <div style={{ padding: 8 }}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!newPath.trim()) return;
+          createFile(newPath.trim());
+          setNewPath("");
+        }}
+        style={{ display: "flex", gap: 6, marginBottom: 8 }}
       >
-        <span className="font-mono text-xs">
-          {isFile ? (node.file?.approved ? "✓" : "•") : "▸"}
-        </span>
-        <span className="truncate">{node.name}</span>
-        {isFile && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (confirm(`Delete ${node.path}?`)) onDelete(node.path);
-            }}
-            className="ml-auto opacity-0 group-hover:opacity-100 hover:text-red-400 text-xs"
-            title="Delete"
-          >
-            ✕
-          </button>
-        )}
-      </div>
-      {node.children?.map((c) => (
-        <Node
-          key={c.path}
-          node={c}
-          depth={depth + 1}
-          activePath={activePath}
-          onSelect={onSelect}
-          onDelete={onDelete}
+        <input
+          value={newPath}
+          onChange={(e) => setNewPath(e.target.value)}
+          placeholder="new/file.md"
+          style={inputStyle}
         />
-      ))}
+        <button type="submit" style={buttonStyle}>
+          +
+        </button>
+      </form>
+
+      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        {files
+          .slice()
+          .sort((a, b) => a.path.localeCompare(b.path))
+          .map((f) => {
+            const isActive = f.path === active;
+            return (
+              <li
+                key={f.path}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                  padding: "4px 6px",
+                  borderRadius: 4,
+                  background: isActive ? "var(--studio-panel-2)" : "transparent",
+                  color: isActive
+                    ? "var(--studio-text)"
+                    : "var(--studio-text-dim)",
+                }}
+              >
+                <button
+                  onClick={() => setActive(f.path)}
+                  style={{
+                    flex: 1,
+                    background: "transparent",
+                    border: "none",
+                    color: "inherit",
+                    textAlign: "left",
+                    fontSize: 12,
+                    padding: 0,
+                  }}
+                >
+                  {f.path}
+                </button>
+                <button
+                  onClick={() => deleteFile(f.path)}
+                  title="Delete"
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "var(--studio-text-dim)",
+                    fontSize: 12,
+                    padding: "0 4px",
+                  }}
+                >
+                  ×
+                </button>
+              </li>
+            );
+          })}
+      </ul>
     </div>
   );
 }
 
-export default function FileTree({ root, activePath, onSelect, onDelete }: Props) {
-  return (
-    <div className="group">
-      <h2 className="text-xs uppercase tracking-widest text-white/40 mb-2">
-        Workspace
-      </h2>
-      {root.children?.length ? (
-        root.children.map((c) => (
-          <Node
-            key={c.path}
-            node={c}
-            depth={0}
-            activePath={activePath}
-            onSelect={onSelect}
-            onDelete={onDelete}
-          />
-        ))
-      ) : (
-        <p className="text-xs text-white/40">No files yet.</p>
-      )}
-    </div>
-  );
-}
+const inputStyle: React.CSSProperties = {
+  flex: 1,
+  background: "var(--studio-bg)",
+  border: "1px solid var(--studio-border)",
+  color: "var(--studio-text)",
+  padding: "4px 8px",
+  fontSize: 12,
+  fontFamily: "inherit",
+  borderRadius: 4,
+};
+
+const buttonStyle: React.CSSProperties = {
+  background: "var(--studio-accent-2)",
+  border: "none",
+  color: "var(--studio-text)",
+  padding: "4px 10px",
+  fontSize: 12,
+  borderRadius: 4,
+};

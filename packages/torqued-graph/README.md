@@ -1,41 +1,49 @@
-# `packages/torqued-graph`
+# @kinform/torqued-graph
 
-The **bipartite affiliate graph** that powers KINFORM's Torqued Affiliation™
-revenue engine.
+Canonical data layer for the KINFORM Autonomous Ecosystem Orchestrator.
 
-## What's in here
+## What this package owns
 
-| Path                                     | Role                                                 |
-| ---------------------------------------- | ---------------------------------------------------- |
-| `prisma/schema.prisma`                   | **Source of truth** for the schema (Next.js side).   |
-| `python/torqued_graph/`                  | SQLAlchemy mirror used by the FastAPI service.       |
-| `ts/index.ts`                            | Hand-written types for serverless / compiler usage.  |
+- **Prisma schema** (`prisma/schema.prisma`) — the canonical source of truth for the Torqued Graph.
+- **TypeScript types & enums** (`src/`) — published as `@kinform/torqued-graph` to all JS/TS workspaces.
+- **SQLAlchemy mirror** (`python/`) — used by the Python PersonaGenAI service.
+- **Seed script** (`prisma/seed.ts`) — deterministic, idempotent dev data.
 
-## Core concept
+## Models at a glance
 
-Physical products (hoodies, crop tops, earrings, …) and affiliate profiles
-are **both** first-class nodes. The `TorquedAffiliation` table is the
-junction. Scanning a product's QR/NFC `physicalId` produces a `RevenueEvent`
-whose `splitJson` snapshots the per-affiliate split at that moment, so
-historical payouts remain reproducible even after the live split is rebalanced.
-
-## Running migrations
-
-```bash
-# Prisma (TypeScript apps)
-cd packages/torqued-graph
-npm install
-npm run prisma:push          # dev sync
-npm run prisma:migrate       # production migration
-
-# SQLAlchemy (Python service) — no migration step; tables are created on
-# first boot via torqued_graph.init_db().
+```
+Drop  ─┬─< Product  ─┬─< TorquedAffiliation >─┬─ AffiliateProfile
+       │             │                        │
+       │             └─< RevenueEvent >───────┘
+       │
+       └─< Campaign ─< ValidationLog
 ```
 
-The default `DATABASE_URL` is a local SQLite file (`./kinform_aeo.db`) so
-both stacks can share one DB in dev. Use Postgres in production.
+## Quick reference
 
-## Keeping the two ORMs in sync
+```bash
+# From repo root:
+npm run graph:generate     # generate Prisma client (TypeScript)
+npm run graph:migrate      # create/apply migrations against the dev DB
+npm run graph:seed         # seed deterministic dev data
 
-When you change one schema, change the other. The PersonaGenAI test suite
-includes a column-parity check that fails CI if a field drifts.
+# From this package, to switch the datasource provider:
+npm run use:sqlite         # default — zero-config dev
+npm run use:postgres       # production-style provider
+```
+
+## Why dual ORMs
+
+The agentic content service (`apps/persona-genai`) writes campaigns and validation logs from Python. Going through HTTP for those writes would add latency and make constraint enforcement inconsistent. Two ORMs against one schema — with CI asserting parity — is the cheapest operational answer.
+
+The Python mirror lives in `python/kinform_torqued_graph/`. Its enum module mirrors `src/enums.ts` value-for-value, and CI fails the build if they drift.
+
+## Provider portability
+
+Prisma cannot enforce native enums on SQLite, and it cannot read the `datasource.provider` from an env var. To keep zero-config local dev *and* a clean Postgres production:
+
+1. We use only portable column types (`String`, `Int`, `Boolean`, `DateTime`, `Json`).
+2. Enums are modelled as `String` columns, with values constrained by `src/enums.ts` / `enums.py`.
+3. The `scripts/switch-provider.mjs` script rewrites the one provider line atomically.
+
+This is the standard, supported workaround.

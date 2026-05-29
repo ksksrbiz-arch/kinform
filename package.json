@@ -1,49 +1,46 @@
 {
-  "name": "kinform",
+  "name": "kinform-aeo",
   "version": "0.1.0",
   "private": true,
-  "description": "KINFORM — Contemporary women's clothing. Digital foundation: marketing site, lookbook, and tech pack generator for three original designs.",
-  "keywords": [
-    "fashion",
-    "womenswear",
-    "lookbook",
-    "tech-pack",
-    "nextjs"
+  "description": "KINFORM Autonomous Ecosystem Orchestrator (KINFORM-AEO) — monorepo containing the storefront, Payload Studio IDE, PersonaGenAI agentic service, Torqued Graph data layer, and governance pipeline.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "optimize:images": "node scripts/optimize-images.js"
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^5.4.0",
-    "@vercel/analytics": "^2.0.1",
-    "@vercel/postgres": "^0.10.0",
-    "@vercel/speed-insights": "^2.0.0",
-    "framer-motion": "^12.40.0",
-    "jspdf": "^4.2.1",
-    "jspdf-autotable": "^5.0.8",
-    "jszip": "^3.10.1",
-    "lucide-react": "^1.16.0",
-    "next": "16.2.6",
-    "next-themes": "^0.4.6",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "react-hook-form": "^7.76.1",
-    "resend": "^6.12.3",
-    "sonner": "^2.0.7",
-    "zod": "^4.4.3"
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "dev": "turbo run dev",
+    "clean": "turbo run clean && rm -rf .turbo node_modules/.cache",
+    "storefront:dev": "turbo run dev --filter=@kinform/storefront",
+    "storefront:build": "turbo run build --filter=@kinform/storefront",
+    "studio:dev": "turbo run dev --filter=@kinform/payload-studio",
+    "studio:build": "turbo run build --filter=@kinform/payload-studio",
+    "db:generate": "turbo run db:generate --filter=@kinform/torqued-graph",
+    "db:migrate": "turbo run db:migrate --filter=@kinform/torqued-graph",
+    "db:migrate:deploy": "turbo run db:migrate:deploy --filter=@kinform/torqued-graph",
+    "db:seed": "turbo run seed --filter=@kinform/torqued-graph",
+    "db:studio": "npm run prisma:studio --workspace @kinform/torqued-graph",
+    "persona:dev": "cd apps/persona-genai && uvicorn kinform_persona.app:app --reload --port 8088",
+    "persona:test": "cd apps/persona-genai && python -m pytest -q",
+    "persona:install": "cd apps/persona-genai && python -m pip install -r requirements-dev.txt",
+    "openapi:dump": "cd apps/persona-genai && python -m kinform_persona.openapi_dump > openapi.json",
+    "gen:types": "npm run openapi:dump && openapi-typescript apps/persona-genai/openapi.json -o packages/shared/src/generated/persona-api.ts",
+    "gen:types:check": "node infra/github-actions/scripts/check-codegen-drift.mjs",
+    "governance:check": "node infra/github-actions/scripts/governance-check.mjs",
+    "demo": "python3 scripts/demo_e2e.py"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.6",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  }
+    "openapi-typescript": "^7.13.0",
+    "tsx": "^4.22.3",
+    "turbo": "^2.3.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "license": "UNLICENSED",
+  "packageManager": "npm@11.9.0"
 }

@@ -1,166 +1,244 @@
-// KINFORM Torqued Graph — Prisma schema (primary).
+// =============================================================================
+// KINFORM Torqued Graph — Prisma schema (canonical source of truth)
+// =============================================================================
 //
-// This schema defines the bipartite affiliate graph that powers KINFORM's
-// physical-to-digital revenue sharing. Physical products and affiliate
-// profiles are *both* first-class nodes; the `TorquedAffiliation` table is
-// the junction that makes "wearing the product = participating in the
-// network" a literal database fact.
+// Two design rules govern this file:
 //
-// Renaming the brand later: only the model names use neutral nouns
-// (Product, Affiliate, Drop, Campaign). The string "KINFORM" appears only in
-// comments and seed data.
+//   1. Provider-portable types only. We use `String`, `Int`, `Boolean`, and
+//      `DateTime`. No `Json`, no `@db.*` native types — Prisma rejects `Json`
+//      on SQLite, so JSON-shaped fields are stored as `String` and parsed by
+//      app code. Helpers in `src/json.ts` (TS) and `kinform_torqued_graph.json`
+//      (Python) hide the (de)serialisation. This lets the same schema run on
+//      SQLite (default, zero-config dev) and Postgres (Vercel Postgres in
+//      production). Switch with `npm run use:postgres`.
+//
+//   2. Enums are modelled as `String` columns with values constrained by
+//      `packages/shared/src/torqued-enums.ts` (TS) and
+//      `packages/shared/python/kinform_shared/torqued_enums.py` (Python).
+//      This is because Prisma does not support `enum` on SQLite. Validation
+//      lives in app code and is asserted in CI.
+//
+// Money is integer minor units (cents). Never floats.
+//
+// =============================================================================
 
 generator client {
   provider = "prisma-client-js"
+  output   = "./generated/client"
 }
 
 datasource db {
-  // Defaults to local SQLite for zero-friction dev; override DATABASE_URL in
-  // production (Postgres recommended — see `.env.example`).
+  // Default for zero-config dev. Run `npm run use:postgres` (in this package)
+  // to flip the provider line atomically for production deploys.
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-// ---------------------------------------------------------------------------
-// Physical-first product node. `physicalId` is the QR/NFC payload printed or
-// stitched onto the garment / jewelry; scanning it triggers a RevenueEvent.
-// ---------------------------------------------------------------------------
-model Product {
-  id           String   @id @default(cuid())
-  physicalId   String   @unique // QR/NFC payload — first-class identity
-  sku          String   @unique
-  name         String
-  category     String   // "hoodie" | "crop-top" | "earring" | ...
-  basePriceCents Int
-  metadata     String?  // JSON blob: materials, colorway, batch, etc.
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  affiliations  TorquedAffiliation[]
-  revenueEvents RevenueEvent[]
-  drop          Drop?    @relation(fields: [dropId], references: [id])
-  dropId       String?
-
-  @@index([category])
-}
-
-// ---------------------------------------------------------------------------
-// Affiliate / wearer profile — the other half of the bipartite graph.
-// ---------------------------------------------------------------------------
-model AffiliateProfile {
-  id           String   @id @default(cuid())
-  handle       String   @unique
-  displayName  String
-  email        String   @unique
-  payoutAddress String? // crypto address or Stripe Connect id
-  tier         String   @default("seed") // "seed" | "core" | "anchor"
-  createdAt    DateTime @default(now())
-
-  affiliations  TorquedAffiliation[]
-  revenueEvents RevenueEvent[]
-}
-
-// ---------------------------------------------------------------------------
-// Junction: which affiliate is torqued to which physical product, with
-// per-edge revenue-share configuration. A product can have many affiliates
-// (e.g. designer + ambassador + retailer); an affiliate can carry many
-// products. Hence the bipartite graph.
-// ---------------------------------------------------------------------------
-model TorquedAffiliation {
-  id              String   @id @default(cuid())
-  productId       String
-  affiliateId     String
-  sharePermille   Int      // share in ‰ (parts per thousand) — integer math
-  role            String   // "designer" | "ambassador" | "retailer" | ...
-  activatedAt     DateTime @default(now())
-  deactivatedAt   DateTime?
-
-  product   Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
-  affiliate AffiliateProfile @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
-
-  @@unique([productId, affiliateId, role])
-  @@index([affiliateId])
-}
-
-// ---------------------------------------------------------------------------
-// Revenue event — emitted on scan, sale, or attribution callback. Storing
-// `splitJson` denormalises the per-affiliate split at the moment of the
-// event so historical payouts are reproducible even if shares are later
-// rebalanced.
-// ---------------------------------------------------------------------------
-model RevenueEvent {
-  id           String   @id @default(cuid())
-  productId    String
-  affiliateId  String?  // primary recipient; full split lives in splitJson
-  kind         String   // "scan" | "sale" | "callback"
-  amountCents  Int
-  currency     String   @default("USD")
-  splitJson    String   // JSON: [{affiliateId, sharePermille, payoutCents}, ...]
-  occurredAt   DateTime @default(now())
-  sourcePhysicalId String? // copy of Product.physicalId for forensic auditing
-
-  product   Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
-  affiliate AffiliateProfile? @relation(fields: [affiliateId], references: [id], onDelete: SetNull)
-
-  @@index([occurredAt])
-  @@index([productId, occurredAt])
-}
-
-// ---------------------------------------------------------------------------
-// Campaign — the artifact produced by PersonaGenAI. Persisted in
-// `simulation` first; only promoted to `production` after human approval.
-// ---------------------------------------------------------------------------
-model Campaign {
-  id           String   @id @default(cuid())
-  slug         String   @unique
-  title        String
-  content      String   // ≤ 140 chars (enforced by governance)
-  hashtagsJson String   // JSON array of strings
-  ctaJson      String   // JSON: { verb, url, label }
-  stage        String   @default("simulation") // "simulation" | "approved" | "production" | "rejected"
-  approvedBy   String?
-  approvedAt   DateTime?
-  rulesVersion String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  validations ValidationLog[]
-  drop        Drop?    @relation(fields: [dropId], references: [id])
-  dropId      String?
-
-  @@index([stage])
-}
-
-// ---------------------------------------------------------------------------
-// ValidationLog — append-only audit trail of every governance run. The
-// GitHub Actions pipeline writes to this table when CI validation fires.
-// ---------------------------------------------------------------------------
-model ValidationLog {
-  id           String   @id @default(cuid())
-  campaignId   String
-  source       String   // "persona-genai" | "ci-pipeline" | "manual"
-  ok           Boolean
-  rulesVersion String
-  violationsJson String  // JSON array
-  warningsJson String   // JSON array
-  createdAt    DateTime @default(now())
-
-  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-
-  @@index([campaignId, createdAt])
-}
-
-// ---------------------------------------------------------------------------
-// Drop — a coordinated release (collection + campaign + product set).
-// ---------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Drops — releases that group products. Examples: HALTER, FISHNET, ACADEMIC.
+// -----------------------------------------------------------------------------
 model Drop {
   id          String   @id @default(cuid())
   slug        String   @unique
   name        String
-  goLiveAt    DateTime
-  retiredAt   DateTime?
-  createdAt   DateTime @default(now())
+  description String
+  /// ISO-8601 release timestamp. Future-dated drops are not yet on the storefront.
+  releasedAt  DateTime
+  /// One of DropStatus: DRAFT | UPCOMING | LIVE | ARCHIVED
+  status      String   @default("DRAFT")
 
   products  Product[]
   campaigns Campaign[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+// -----------------------------------------------------------------------------
+// Products — physical SKUs. Each unit has a `physicalId` (QR/NFC). This is
+// the entry point for the Torqued Affiliation graph: scanning a tag produces
+// RevenueEvents attributed to the bonded affiliate(s).
+// -----------------------------------------------------------------------------
+model Product {
+  id          String  @id @default(cuid())
+  /// Stable, URL-safe SKU slug (e.g. "halter-noir-s").
+  sku         String  @unique
+  /// Physical tag identifier (QR/NFC). Unique across all produced units.
+  physicalId  String  @unique
+  name        String
+  description String
+  /// One of ProductCategory: APPAREL | JEWELRY | ACCESSORY
+  category    String
+  /// Integer minor units (USD cents). Never floats.
+  priceCents  Int
+  /// Whether the product is currently purchasable on the storefront.
+  available   Boolean @default(true)
+
+  dropId String?
+  drop   Drop?   @relation(fields: [dropId], references: [id], onDelete: SetNull)
+
+  affiliations  TorquedAffiliation[]
+  revenueEvents RevenueEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([dropId])
+}
+
+// -----------------------------------------------------------------------------
+// AffiliateProfile — humans or organisations earning through the graph.
+// -----------------------------------------------------------------------------
+model AffiliateProfile {
+  id           String  @id @default(cuid())
+  handle       String  @unique
+  displayName  String
+  email        String  @unique
+  /// One of AffiliateTier: SEED | BLOOM | TORQUE | KEYSTONE
+  tier         String  @default("SEED")
+  /// Opaque payout configuration (Stripe Connect id, etc.). JSON-encoded string.
+  payoutConfig String?
+  /// Default per-product revenue share in basis points (0–10000).
+  defaultShareBps Int  @default(1000)
+  active       Boolean @default(true)
+
+  affiliations  TorquedAffiliation[]
+  revenueEvents RevenueEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tier])
+}
+
+// -----------------------------------------------------------------------------
+// TorquedAffiliation — the bipartite junction edge. An affiliate "wears"
+// (or champions) a product. Weighted and time-bounded.
+// -----------------------------------------------------------------------------
+model TorquedAffiliation {
+  id           String   @id @default(cuid())
+  productId    String
+  affiliateId  String
+  /// Revenue share for this specific edge, in basis points (0–10000).
+  /// Falls back to AffiliateProfile.defaultShareBps if null.
+  shareBps     Int?
+  /// Weighting used for multi-affiliate attribution on the same physical scan.
+  weight       Int      @default(1)
+  startsAt     DateTime @default(now())
+  endsAt       DateTime?
+
+  product   Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  affiliate AffiliateProfile @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
+  revenueEvents RevenueEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, affiliateId, startsAt])
+  @@index([productId])
+  @@index([affiliateId])
+}
+
+// -----------------------------------------------------------------------------
+// RevenueEvent — append-only ledger. Drives payouts. Never updated.
+// -----------------------------------------------------------------------------
+model RevenueEvent {
+  id            String   @id @default(cuid())
+  /// One of RevenueEventKind: SCAN | ATTRIBUTED_PURCHASE | PASS_THROUGH | ADJUSTMENT
+  kind          String
+  /// Gross amount in integer minor units. Can be 0 for pure SCAN events.
+  amountCents   Int      @default(0)
+  /// Amount actually distributed to the affiliate, in integer minor units.
+  payoutCents   Int      @default(0)
+  /// Free-form structured context (request id, geo, user agent hash, etc.).
+  /// JSON-encoded string (parsed via `parseJson` / `kinform_torqued_graph.json`).
+  metadata      String?
+
+  productId     String
+  affiliateId   String?
+  affiliationId String?
+
+  product     Product             @relation(fields: [productId], references: [id], onDelete: Restrict)
+  affiliate   AffiliateProfile?   @relation(fields: [affiliateId], references: [id], onDelete: SetNull)
+  affiliation TorquedAffiliation? @relation(fields: [affiliationId], references: [id], onDelete: SetNull)
+
+  occurredAt DateTime @default(now())
+
+  @@index([productId, occurredAt])
+  @@index([affiliateId, occurredAt])
+  @@index([kind])
+}
+
+// -----------------------------------------------------------------------------
+// Campaign — generated marketing content. Strict state machine:
+//
+//   DRAFT → SIMULATION → AWAITING_APPROVAL → APPROVED → PUBLISHED
+//                ↘ REJECTED ↙
+//
+// Promotion from AWAITING_APPROVAL to APPROVED REQUIRES a non-null
+// `approvedBy` (the human approver identity). Enforced in app code and in CI.
+// -----------------------------------------------------------------------------
+model Campaign {
+  id           String  @id @default(cuid())
+  /// Short, human-readable handle for the campaign (e.g. "halter-noir-launch").
+  slug         String  @unique
+  /// One of CampaignStatus: DRAFT | SIMULATION | AWAITING_APPROVAL | APPROVED | PUBLISHED | REJECTED
+  status       String  @default("DRAFT")
+  /// Optional drop this campaign promotes.
+  dropId       String?
+  drop         Drop?   @relation(fields: [dropId], references: [id], onDelete: SetNull)
+
+  /// Caption / body content. ≤ 140 characters enforced by Pydantic + Zod.
+  content      String
+  /// CTAs (e.g. ["Scan to wear", "Join the network"]). JSON-encoded string.
+  ctas         String
+  /// Hashtag cluster. Must include #KINFORM and #TorquedAffiliation.
+  /// JSON-encoded string.
+  hashtags     String
+  /// Target channel hint: instagram | tiktok | email | print | other
+  channel      String  @default("instagram")
+
+  /// Human approver identity (email, OIDC sub, etc.). Required for APPROVED+.
+  approvedBy   String?
+  approvedAt   DateTime?
+  publishedAt  DateTime?
+  rejectedReason String?
+
+  validationLogs ValidationLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([dropId])
+}
+
+// -----------------------------------------------------------------------------
+// ValidationLog — per-agent verdict on a campaign. Append-only.
+// -----------------------------------------------------------------------------
+model ValidationLog {
+  id         String   @id @default(cuid())
+  campaignId String
+  /// One of ValidationAgent: BRAND_VOICE | COMPLIANCE | ANALYTICS | HUMAN | SUPERVISOR
+  agent      String
+  /// One of ValidationVerdict: PASS | FAIL | WARN
+  verdict    String
+  /// 0–100 confidence score from the agent.
+  score      Int      @default(0)
+  /// Structured details: violations[], suggestions[], metrics{}. JSON-encoded string.
+  details    String
+  /// For HUMAN verdicts, the approver identity that produced this log.
+  actor      String?
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([campaignId, createdAt])
+  @@index([agent])
+  @@index([verdict])
 }

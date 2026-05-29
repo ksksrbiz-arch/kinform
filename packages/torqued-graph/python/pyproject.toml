@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kinform-torqued-graph"
+version = "0.1.0"
+description = "KINFORM Torqued Graph — SQLAlchemy mirror of the canonical Prisma schema."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "UNLICENSED" }
+authors = [{ name = "KINFORM" }]
+dependencies = [
+    "sqlalchemy>=2.0,<3.0",
+]
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]>=3.1"]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["kinform_torqued_graph*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

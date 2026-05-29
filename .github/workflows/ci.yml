@@ -1,0 +1,167 @@
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# ---------------------------------------------------------------------------
+# Turborepo Remote Cache wiring.
+#
+# Set these as repository secrets/variables (Settings → Secrets and variables
+# → Actions). Even when we deploy to Vercel via its own integration, Vercel
+# Remote Cache makes CI builds ~free after the first warm run:
+#
+#   TURBO_TOKEN  — Vercel access token (Account Settings → Tokens). Secret.
+#   TURBO_TEAM   — Vercel team / personal slug. Variable.
+#
+# To use a different remote cache backend, override TURBO_API to your own
+# self-hosted endpoint. Leave the signature key in place — Turbo signs
+# artifacts so a compromised cache cannot inject builds.
+# ---------------------------------------------------------------------------
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
+  TURBO_TELEMETRY_DISABLED: "1"
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Lint / typecheck the whole graph — fast, fully cached after the first run.
+  # ---------------------------------------------------------------------------
+  graph:
+    name: lint + typecheck (full graph)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client (cached by turbo)
+        run: npm run db:generate
+        env:
+          DATABASE_URL: "file:./packages/torqued-graph/prisma/ci.db"
+
+      - name: Lint
+        run: npx turbo run lint
+
+      - name: Typecheck
+        run: npx turbo run typecheck
+        env:
+          DATABASE_URL: "file:./packages/torqued-graph/prisma/ci.db"
+
+  # ---------------------------------------------------------------------------
+  # Build a single app using `turbo prune`. This is the canonical Turbo
+  # pattern for app-scoped CI / Docker / serverless deploys: prune the repo
+  # down to the workspace + its transitive deps, install just that subset,
+  # then build. Remote cache still applies.
+  # ---------------------------------------------------------------------------
+  storefront:
+    name: storefront (pruned build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # We need turbo on PATH to prune before installing app deps.
+      - name: Install turbo
+        run: npm install -g turbo@^2.3.0
+
+      - name: Prune monorepo to @kinform/storefront
+        run: turbo prune --scope=@kinform/storefront --docker
+
+      # `turbo prune --docker` emits ./out/json (lockfile + package.jsons only)
+      # for layer caching, plus ./out/full with the rest of the source.
+      - name: Install pruned dependencies
+        working-directory: out/json
+        run: npm ci
+
+      - name: Sync pruned source over installed deps
+        run: cp -R out/full/. out/json/
+
+      - name: Generate Prisma client
+        working-directory: out/json
+        run: npx turbo run db:generate --filter=@kinform/torqued-graph
+        env:
+          DATABASE_URL: "file:./packages/torqued-graph/prisma/ci.db"
+
+      - name: Build storefront
+        working-directory: out/json
+        run: npx turbo run build --filter=@kinform/storefront
+        env:
+          # Storefront SSG queries Postgres at build time; provide a CI value
+          # or accept that build-time fetches will be skipped/dummy.
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL_CI }}
+          POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_URL_CI }}
+          POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_CI }}
+
+  # ---------------------------------------------------------------------------
+  # Governance checks — guard the campaign + schema state machine.
+  # Parity between TS and Python enums + branding constants; end-to-end run
+  # of the Polymorphic Bootstrapping Compiler (compile → execute → idempotence
+  # check) using the real compiler source through tsx.
+  # ---------------------------------------------------------------------------
+  governance:
+    name: governance (campaigns + schema parity + bootstrapper e2e)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: npm ci
+      - name: Install persona-genai (editable, for OpenAPI dump)
+        run: |
+          python -m pip install --upgrade pip
+          cd apps/persona-genai
+          python -m pip install -r requirements-dev.txt
+      - run: npm run governance:check
+
+  # ---------------------------------------------------------------------------
+  # PersonaGenAI Python tests + end-to-end demo. Keeps the agentic pipeline
+  # and state machine honest on every PR.
+  # ---------------------------------------------------------------------------
+  persona:
+    name: persona-genai (pytest + e2e demo)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install persona-genai (editable)
+        run: |
+          python -m pip install --upgrade pip
+          cd apps/persona-genai
+          python -m pip install -r requirements-dev.txt
+      - name: Pytest
+        run: cd apps/persona-genai && python -m pytest -q
+      - name: End-to-end demo
+        run: python scripts/demo_e2e.py

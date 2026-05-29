@@ -1,21 +1,13 @@
 import type { NextConfig } from "next";
 
-/**
- * KINFORM Payload Studio — Next.js 15 config.
- *
- * `transpilePackages` lets us import the shared TS governance module
- * directly from `packages/shared/ts` without a separate build step.
- */
-const config: NextConfig = {
+const nextConfig: NextConfig = {
   reactStrictMode: true,
-  transpilePackages: ["@kinform/torqued-graph"],
-  experimental: {
-    typedRoutes: false,
-  },
+  // The Studio talks to PersonaGenAI from the browser, so just pass the URL
+  // through. Server-side rendering is unused for the editor itself.
   env: {
     NEXT_PUBLIC_PERSONA_GENAI_URL:
-      process.env.NEXT_PUBLIC_PERSONA_GENAI_URL ?? "http://localhost:8000",
+      process.env.NEXT_PUBLIC_PERSONA_GENAI_URL ?? "http://localhost:8088",
   },
 };
 
-export default config;
+export default nextConfig;

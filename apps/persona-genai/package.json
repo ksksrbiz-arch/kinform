@@ -1,0 +1,14 @@
+{
+  "name": "@kinform/persona-genai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "KINFORM PersonaGenAI — FastAPI + multi-agent service that drafts, simulates, and gates marketing campaigns behind human approval.",
+  "scripts": {
+    "install:py": "python3 -m pip install --upgrade pip && python3 -m pip install -r requirements-dev.txt",
+    "dev": "uvicorn kinform_persona.app:app --reload --host 0.0.0.0 --port 8088",
+    "start": "uvicorn kinform_persona.app:app --host 0.0.0.0 --port 8088",
+    "test": "python3 -m pytest -q",
+    "typecheck": "python3 -c \"import kinform_persona; print('ok')\""
+  },
+  "license": "UNLICENSED"
+}

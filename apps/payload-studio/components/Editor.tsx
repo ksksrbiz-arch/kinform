@@ -1,52 +1,68 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { VFile } from "@/lib/vfs";
+import { useStudio } from "@/lib/store";
 
-interface Props {
-  file: VFile | null;
-  onChange: (file: VFile) => void;
-}
-
-export default function Editor({ file, onChange }: Props) {
-  const [draft, setDraft] = useState("");
-
-  useEffect(() => {
-    setDraft(file?.content ?? "");
-  }, [file?.path]);
+export default function Editor() {
+  const active = useStudio((s) => s.activePath);
+  const file = useStudio((s) =>
+    active ? s.files.find((f) => f.path === active) ?? null : null,
+  );
+  const writeFile = useStudio((s) => s.writeFile);
 
   if (!file) {
     return (
-      <div className="flex-1 p-6 text-white/40 text-sm">
-        Select a file from the tree, or generate a campaign above.
+      <div
+        style={{
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "var(--studio-text-dim)",
+          fontSize: 13,
+        }}
+      >
+        Select a file in the left sidebar, or create one.
       </div>
     );
   }
 
-  function save() {
-    if (!file) return;
-    onChange({ ...file, content: draft, updatedAt: new Date().toISOString() });
-  }
-
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="px-4 py-2 border-y border-white/10 flex items-center gap-3 text-xs">
-        <span className="font-mono text-kinform-torque">{file.path}</span>
-        <span className="text-white/40 uppercase tracking-widest">{file.kind}</span>
-        {file.approved && (
-          <span className="ml-auto text-green-400">approved ✓</span>
-        )}
+    <div
+      style={{
+        display: "grid",
+        gridTemplateRows: "32px 1fr",
+        height: "100%",
+      }}
+    >
+      <div
+        style={{
+          background: "var(--studio-panel)",
+          borderBottom: "1px solid var(--studio-border)",
+          padding: "8px 12px",
+          fontSize: 12,
+          color: "var(--studio-text-dim)",
+        }}
+      >
+        {file.path}
       </div>
       <textarea
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={save}
+        value={file.content}
+        onChange={(e) => writeFile(file.path, e.target.value)}
         spellCheck={false}
-        className="flex-1 w-full bg-black/40 text-kinform-parchment font-mono text-sm p-4 outline-none resize-none"
+        style={{
+          width: "100%",
+          height: "100%",
+          resize: "none",
+          background: "var(--studio-bg)",
+          color: "var(--studio-text)",
+          border: "none",
+          outline: "none",
+          padding: 16,
+          fontFamily: "inherit",
+          fontSize: 13,
+          lineHeight: 1.5,
+        }}
       />
-      <div className="px-4 py-2 border-t border-white/10 text-xs text-white/40">
-        Auto-saves on blur · {draft.length} chars
-      </div>
     </div>
   );
 }

@@ -1,181 +1,179 @@
-"""Cross-service governance rules for KINFORM-AEO.
+"""Governance ruleset — mirror of ``packages/shared/src/governance.ts``.
 
-These rules are intentionally pure-Python (no third-party deps) so they can be
-imported by:
-
-* the FastAPI PersonaGenAI service (campaign validation),
-* the GitHub Actions governance pipeline (CI-time enforcement),
-* offline tooling embedded in the Polymorphic Bootstrapping Compiler.
-
-The rules deliberately mirror ``packages/shared/ts/governance.ts`` line for
-line. When you change one, change the other and bump ``GOVERNANCE_RULES_VERSION``.
+The evaluation function must produce a verdict identical to the TypeScript
+counterpart given the same input. Parity is asserted by CI.
 """
+
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass, field
-from typing import Iterable
+from typing import Literal, Sequence
 
-#: Bump this whenever the rule set changes. The CI pipeline pins on it so
-#: campaigns approved under an older version are flagged for re-validation.
-GOVERNANCE_RULES_VERSION = "1.0.0"
-
-#: Brand name used in all required hashtags and brand-voice checks. Keep this
-#: as the only place "KINFORM" is hard-coded for governance purposes.
-BRAND_NAME = "KINFORM"
-
-#: Hard limit on marketing copy length, in characters. Twitter-derived budget
-#: so the same content fits every channel KINFORM ships today.
-MAX_CONTENT_CHARS = 140
-
-#: Hashtags every campaign **must** carry. ``#TorquedAffiliation`` is the
-#: program-wide attribution tag; ``#KINFORM`` is brand attribution.
-REQUIRED_HASHTAGS: tuple[str, ...] = ("#KINFORM", "#TorquedAffiliation")
-
-#: Phrases the Brand Voice agent must reject. Add to this list rather than
-#: editing inline regexes.
-BANNED_PHRASES: tuple[str, ...] = (
-    "guaranteed returns",
-    "get rich quick",
-    "risk-free",
-    "no risk",
-    "miracle",
-    "passive income forever",
+from kinform_shared.branding import (
+    APPROVED_CTAS,
+    BANNED_PHRASES,
+    BRAND,
+    CONTENT_MAX_LENGTH,
+    REQUIRED_HASHTAGS,
 )
 
-#: A campaign must contain a call-to-action whose imperative verb is in this
-#: set. The check is case-insensitive and matches whole words only.
-REQUIRED_CTA_VERBS: tuple[str, ...] = (
-    "shop",
-    "wear",
-    "join",
-    "claim",
-    "drop",
-    "scan",
-    "tap",
-)
-
-_WORD_RE = re.compile(r"[A-Za-z]+")
+GovernanceVerdict = Literal["PASS", "WARN", "FAIL"]
 
 
 @dataclass(frozen=True)
-class GovernanceViolation:
-    """A single rule violation. ``code`` is stable; ``message`` is human text."""
+class CampaignCandidate:
+    content: str
+    ctas: tuple[str, ...]
+    hashtags: tuple[str, ...]
 
-    code: str
+
+@dataclass(frozen=True)
+class Finding:
+    rule: str
+    severity: GovernanceVerdict
     message: str
-    field: str = "content"
 
 
 @dataclass
-class GovernanceResult:
-    """Aggregate validation result.
+class GovernanceReport:
+    verdict: GovernanceVerdict
+    score: int
+    findings: list[Finding] = field(default_factory=list)
 
-    ``ok`` is True only when there are zero violations. ``warnings`` never
-    block promotion but are surfaced to humans in the approval UI.
-    """
-
-    ok: bool
-    violations: list[GovernanceViolation] = field(default_factory=list)
-    warnings: list[str] = field(default_factory=list)
-    rules_version: str = GOVERNANCE_RULES_VERSION
-
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, object]:
         return {
-            "ok": self.ok,
-            "rules_version": self.rules_version,
-            "violations": [v.__dict__ for v in self.violations],
-            "warnings": list(self.warnings),
+            "verdict": self.verdict,
+            "score": self.score,
+            "findings": [
+                {"rule": f.rule, "severity": f.severity, "message": f.message}
+                for f in self.findings
+            ],
         }
 
 
-def _contains_cta(content: str) -> bool:
-    words = {w.lower() for w in _WORD_RE.findall(content)}
-    return any(verb in words for verb in REQUIRED_CTA_VERBS)
+def _norm(s: str) -> str:
+    return s.strip().lower()
 
 
-def enforce_governance(
-    content: str,
-    hashtags: Iterable[str] = (),
-    *,
-    approved_by_human: bool = False,
-    require_human_approval: bool = True,
-) -> GovernanceResult:
-    """Run every governance rule against a candidate campaign payload.
+def evaluate_governance(candidate: CampaignCandidate) -> GovernanceReport:
+    """Run the full ruleset; verdict precedence is FAIL > WARN > PASS."""
+    findings: list[Finding] = []
+    score = 100
 
-    Parameters
-    ----------
-    content:
-        The marketing copy itself (the part subject to the character budget).
-    hashtags:
-        Hashtags attached to the campaign (case-insensitive comparison).
-    approved_by_human:
-        Whether a human reviewer has signed off. Only meaningful when
-        ``require_human_approval`` is True (the default).
-    require_human_approval:
-        When False (e.g. simulation staging), the human-gate violation is
-        downgraded to a warning instead of blocking.
-    """
-
-    violations: list[GovernanceViolation] = []
-    warnings: list[str] = []
-
-    if not isinstance(content, str) or not content.strip():
-        violations.append(
-            GovernanceViolation("EMPTY_CONTENT", "Content must be non-empty.")
+    # --- Length ---
+    if len(candidate.content) == 0:
+        findings.append(
+            Finding("content.nonEmpty", "FAIL", "Campaign content is empty.")
         )
-        return GovernanceResult(ok=False, violations=violations)
-
-    if len(content) > MAX_CONTENT_CHARS:
-        violations.append(
-            GovernanceViolation(
-                "CONTENT_TOO_LONG",
-                f"Content is {len(content)} chars; max is {MAX_CONTENT_CHARS}.",
+        score -= 50
+    elif len(candidate.content) > CONTENT_MAX_LENGTH:
+        findings.append(
+            Finding(
+                "content.maxLength",
+                "FAIL",
+                f"Content exceeds {CONTENT_MAX_LENGTH} characters "
+                f"(got {len(candidate.content)}).",
             )
         )
+        score -= 30
 
-    lowered = content.lower()
-    for phrase in BANNED_PHRASES:
-        if phrase in lowered:
-            violations.append(
-                GovernanceViolation(
-                    "BANNED_PHRASE",
-                    f"Content contains banned phrase: {phrase!r}.",
-                )
-            )
-
-    if not _contains_cta(content):
-        violations.append(
-            GovernanceViolation(
-                "MISSING_CTA",
-                "Content must include a call-to-action verb "
-                f"(one of: {', '.join(REQUIRED_CTA_VERBS)}).",
-            )
-        )
-
-    normalised_tags = {h.lower().lstrip("#") for h in hashtags}
+    # --- Required hashtags ---
+    hashtags_lower = {_norm(h) for h in candidate.hashtags}
     for required in REQUIRED_HASHTAGS:
-        if required.lower().lstrip("#") not in normalised_tags:
-            violations.append(
-                GovernanceViolation(
-                    "MISSING_HASHTAG",
-                    f"Required hashtag missing: {required}",
-                    field="hashtags",
+        if _norm(required) not in hashtags_lower:
+            findings.append(
+                Finding(
+                    "hashtags.required",
+                    "FAIL",
+                    f"Missing required hashtag {required}.",
                 )
             )
+            score -= 20
 
-    if require_human_approval and not approved_by_human:
-        violations.append(
-            GovernanceViolation(
-                "HUMAN_APPROVAL_REQUIRED",
-                "Promotion to production requires explicit human approval.",
-                field="approval",
+    # --- At least one approved CTA ---
+    ctas_lower = [_norm(c) for c in candidate.ctas]
+    approved_lower = {_norm(c) for c in APPROVED_CTAS}
+    if len(candidate.ctas) == 0:
+        findings.append(
+            Finding("ctas.required", "FAIL", "At least one CTA is required.")
+        )
+        score -= 25
+    elif not any(c in approved_lower for c in ctas_lower):
+        findings.append(
+            Finding(
+                "ctas.approved",
+                "WARN",
+                "No CTA matches the approved vocabulary "
+                f"({' | '.join(APPROVED_CTAS)}).",
             )
         )
-    elif not require_human_approval and not approved_by_human:
-        warnings.append(
-            "Running in simulation mode — human approval still required "
-            "before production promotion."
-        )
+        score -= 10
 
-    return GovernanceResult(ok=not violations, violations=violations, warnings=warnings)
+    # --- Banned phrases ---
+    content_lower = _norm(candidate.content)
+    for banned in BANNED_PHRASES:
+        if banned in content_lower:
+            findings.append(
+                Finding(
+                    "content.bannedPhrase",
+                    "FAIL",
+                    f'Content contains banned phrase "{banned}".',
+                )
+            )
+            score -= 40
+
+    # --- Brand name presence (WARN only) ---
+    if _norm(BRAND.name) not in content_lower:
+        if not any(_norm(BRAND.name) in h for h in hashtags_lower):
+            findings.append(
+                Finding(
+                    "brand.namePresence",
+                    "WARN",
+                    f'Content does not mention "{BRAND.name}" or carry it in a hashtag.',
+                )
+            )
+            score -= 5
+
+    if any(f.severity == "FAIL" for f in findings):
+        verdict: GovernanceVerdict = "FAIL"
+    elif any(f.severity == "WARN" for f in findings):
+        verdict = "WARN"
+    else:
+        verdict = "PASS"
+
+    return GovernanceReport(verdict=verdict, score=max(0, min(100, score)), findings=findings)
+
+
+def suggest_fixes(report: GovernanceReport) -> list[str]:
+    """Concrete patch suggestions; does NOT mutate the candidate."""
+    out: list[str] = []
+    for f in report.findings:
+        if f.rule == "content.maxLength":
+            out.append(f"Trim content to {CONTENT_MAX_LENGTH} characters or fewer.")
+        elif f.rule == "hashtags.required":
+            out.append(
+                "Add the missing required hashtags: " + ", ".join(REQUIRED_HASHTAGS) + "."
+            )
+        elif f.rule in {"ctas.required", "ctas.approved"}:
+            out.append(
+                "Use one of the approved CTAs: " + " | ".join(APPROVED_CTAS) + "."
+            )
+        elif f.rule == "content.bannedPhrase":
+            out.append("Remove banned phrasing — see KINFORM voice guidelines.")
+        elif f.rule == "brand.namePresence":
+            out.append(f'Mention "{BRAND.name}" in the body or include #{BRAND.name}.')
+        elif f.rule == "content.nonEmpty":
+            out.append("Write at least one sentence of campaign body.")
+    return out
+
+
+def evaluate_simple(
+    *,
+    content: str,
+    ctas: Sequence[str],
+    hashtags: Sequence[str],
+) -> GovernanceReport:
+    """Convenience entrypoint that accepts plain sequences."""
+    return evaluate_governance(
+        CampaignCandidate(content=content, ctas=tuple(ctas), hashtags=tuple(hashtags))
+    )
