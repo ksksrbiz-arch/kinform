@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+  --studio-bg: #0F1115;
+  --studio-panel: #161A22;
+  --studio-panel-2: #1D222C;
+  --studio-border: #2A313E;
+  --studio-text: #E6E8EE;
+  --studio-text-dim: #8A93A6;
+  --studio-accent: #C9A87C;
+  --studio-accent-2: #6F5A47;
+  --studio-ok: #6FA86F;
+  --studio-warn: #D6B65A;
+  --studio-bad: #C97A6F;
+
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+html, body {
+  background: var(--studio-bg);
+  color: var(--studio-text);
+  font-family: var(--font-mono);
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
