@@ -21,25 +21,17 @@ const tmp = mkdtempSync(join(tmpdir(), "kinform-codegen-"));
 const freshOpenapi = join(tmp, "openapi.json");
 const freshTs = join(tmp, "persona-api.ts");
 
-function run(cmd) {
-    return execSync(cmd, { cwd: REPO, stdio: ["ignore", "pipe", "pipe"] }).toString();
+function run(cmd, opts = {}) {
+    return execSync(cmd, { cwd: REPO, stdio: ["ignore", "pipe", "pipe"], ...opts }).toString();
 }
 
 try {
     const dump = run("python3 -m kinform_persona.openapi_dump", {
         cwd: join(REPO, "apps/persona-genai"),
     });
-    // Re-run from the right cwd:
-    const dump2 = execSync("python3 -m kinform_persona.openapi_dump", {
-        cwd: join(REPO, "apps/persona-genai"),
-        stdio: ["ignore", "pipe", "pipe"],
-    }).toString();
-    writeFileSync(freshOpenapi, dump2);
+    writeFileSync(freshOpenapi, dump);
 
-    execSync(
-        `npx --no-install openapi-typescript "${freshOpenapi}" -o "${freshTs}"`,
-        { cwd: REPO, stdio: ["ignore", "pipe", "pipe"] },
-    );
+    run(`npx --no-install openapi-typescript "${freshOpenapi}" -o "${freshTs}"`);
 
     const expectedOpenapi = readFileSync(COMMITTED_OPENAPI, "utf8");
     const expectedTs = readFileSync(COMMITTED_TS, "utf8");

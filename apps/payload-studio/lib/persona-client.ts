@@ -8,6 +8,28 @@
 
 import type { Campaign, CampaignChannel, SimulationVerdict } from "./types";
 
+export interface GenerateRequest {
+  dropId: string;
+  days?: number;
+  channel?: CampaignChannel;
+  forceRegenerate?: boolean;
+}
+
+export interface GenerateResponse {
+  simulationId: string;
+  campaignId: string;
+  status: string;
+  draft: {
+    title: string;
+    content: string;
+    ctas: string[];
+    hashtags: string[];
+    tone: string;
+  };
+  validation: { passed: boolean; errors: string[] };
+  campaign: Campaign;
+}
+
 const BASE =
   (typeof process !== "undefined" && process.env.NEXT_PUBLIC_PERSONA_GENAI_URL) ||
   "http://localhost:8088";
@@ -75,5 +97,20 @@ export const persona = {
   },
   get(id: string): Promise<{ campaign: Campaign }> {
     return call(`/campaigns/${id}`);
+  },
+  /**
+   * One-shot create + simulate. See PersonaGenAI integration plan §3.1.
+   * The server auto-generates a unique slug per (drop, channel, minute).
+   */
+  generate(opts: GenerateRequest): Promise<GenerateResponse> {
+    return call("/campaigns/generate", {
+      method: "POST",
+      body: JSON.stringify({
+        dropId: opts.dropId,
+        days: opts.days ?? 14,
+        channel: opts.channel ?? "instagram",
+        forceRegenerate: opts.forceRegenerate ?? false,
+      }),
+    });
   },
 };

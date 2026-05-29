@@ -5,6 +5,7 @@ import { useState } from "react";
 import { persona } from "@/lib/persona-client";
 import { useStudio } from "@/lib/store";
 import type { Campaign, CampaignChannel } from "@/lib/types";
+import CampaignGenerator from "./CampaignGenerator";
 
 const STATUS_COLOUR: Record<string, string> = {
   DRAFT: "var(--studio-text-dim)",
@@ -85,6 +86,7 @@ export default function CampaignsPanel() {
 
   return (
     <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 12 }}>
+      <CampaignGenerator />
       <section>
         <SectionTitle>New campaign</SectionTitle>
         <form

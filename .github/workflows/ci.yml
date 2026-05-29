@@ -136,6 +136,11 @@ jobs:
         with:
           python-version: "3.11"
       - run: npm ci
+      - name: Install persona-genai (editable, for OpenAPI dump)
+        run: |
+          python -m pip install --upgrade pip
+          cd apps/persona-genai
+          python -m pip install -r requirements-dev.txt
       - run: npm run governance:check
 
   # ---------------------------------------------------------------------------

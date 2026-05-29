@@ -299,6 +299,24 @@ section("bootstrap compiler end-to-end", () => {
 });
 
 // ---------------------------------------------------------------------------
+// 5. Codegen drift (OpenAPI spec + generated TS types).
+// ---------------------------------------------------------------------------
+section("codegen drift (OpenAPI ↔ persona-api.ts)", () => {
+  const result = spawnSync(
+    "node",
+    [path.join(__dirname, "check-codegen-drift.mjs")],
+    { cwd: ROOT, encoding: "utf8" },
+  );
+  if (result.stdout) process.stdout.write(result.stdout);
+  if (result.status !== 0) {
+    fail(
+      "codegen-drift",
+      (result.stderr || "drift check exited non-zero").trim(),
+    );
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Report
 // ---------------------------------------------------------------------------
 if (failures.length > 0) {
