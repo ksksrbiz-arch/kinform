@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kinform-shared"
+version = "0.1.0"
+description = "KINFORM shared constants & governance rules (Python mirror of @kinform/shared)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "UNLICENSED" }
+authors = [{ name = "KINFORM" }]
+dependencies = [
+    "pydantic>=2.7,<3.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "ruff>=0.6"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["kinform_shared*"]
