@@ -1,5 +1,5 @@
 {
-  "name": "kinform",
+  "name": "@kinform/storefront",
   "version": "0.1.0",
   "private": true,
   "description": "KINFORM — Contemporary women's clothing. Digital foundation: marketing site, lookbook, and tech pack generator for three original designs.",
@@ -15,6 +15,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "optimize:images": "node scripts/optimize-images.js"
   },
   "dependencies": {

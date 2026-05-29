@@ -1,0 +1,184 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "stream",
+  "globalDependencies": [
+    ".env",
+    ".env.local",
+    ".github/workflows/**"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "CI",
+    "VERCEL",
+    "VERCEL_ENV",
+    "VERCEL_URL"
+  ],
+  "globalPassThroughEnv": [
+    "PATH",
+    "HOME",
+    "TURBO_TOKEN",
+    "TURBO_TEAM",
+    "TURBO_REMOTE_CACHE_SIGNATURE_KEY"
+  ],
+  "remoteCache": {
+    "enabled": true,
+    "signature": true
+  },
+  "tasks": {
+    "//#format:check": {
+      "inputs": ["**/*.{ts,tsx,js,mjs,json,md,prisma,py}", "!**/node_modules/**", "!**/.next/**", "!**/dist/**", "!**/generated/**"],
+      "outputs": []
+    },
+
+    "build": {
+      "dependsOn": ["^build", "db:generate"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.md",
+        "!**/.next/cache/**",
+        "!**/coverage/**",
+        "!**/__pycache__/**"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**",
+        "build/**",
+        "out/**"
+      ],
+      "env": [
+        "NODE_ENV",
+        "NEXT_PUBLIC_*",
+        "DATABASE_URL",
+        "DATABASE_PROVIDER",
+        "POSTGRES_URL",
+        "POSTGRES_PRISMA_URL",
+        "POSTGRES_URL_NON_POOLING",
+        "RESEND_API_KEY",
+        "ANALYZE"
+      ]
+    },
+
+    "lint": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "src/**/*.{ts,tsx,js,jsx,mjs}",
+        "app/**/*.{ts,tsx,js,jsx,mjs}",
+        "components/**/*.{ts,tsx,js,jsx,mjs}",
+        "lib/**/*.{ts,tsx,js,jsx,mjs}",
+        "prisma/**/*.ts",
+        "scripts/**/*.{js,mjs,ts}",
+        ".eslintrc*",
+        "eslint.config.*",
+        "package.json",
+        "tsconfig.json"
+      ],
+      "outputs": []
+    },
+
+    "typecheck": {
+      "dependsOn": ["^build", "db:generate"],
+      "inputs": [
+        "src/**/*.{ts,tsx}",
+        "app/**/*.{ts,tsx}",
+        "components/**/*.{ts,tsx}",
+        "lib/**/*.{ts,tsx}",
+        "prisma/**/*.ts",
+        "tsconfig.json",
+        "tsconfig.*.json"
+      ],
+      "outputs": []
+    },
+
+    "test": {
+      "dependsOn": ["^build", "db:generate"],
+      "inputs": [
+        "src/**",
+        "tests/**",
+        "test/**",
+        "__tests__/**",
+        "vitest.config.*",
+        "jest.config.*",
+        "pytest.ini",
+        "pyproject.toml"
+      ],
+      "outputs": ["coverage/**", ".pytest_cache/**"],
+      "env": ["NODE_ENV", "DATABASE_URL", "KINFORM_LLM_PROVIDER"]
+    },
+
+    "db:generate": {
+      "inputs": [
+        "prisma/schema.prisma"
+      ],
+      "outputs": [
+        "prisma/generated/**"
+      ],
+      "env": ["DATABASE_URL"]
+    },
+
+    "db:migrate": {
+      "cache": false,
+      "persistent": false,
+      "dependsOn": ["db:generate"],
+      "inputs": [
+        "prisma/schema.prisma",
+        "prisma/migrations/**"
+      ],
+      "env": ["DATABASE_URL"]
+    },
+
+    "db:migrate:deploy": {
+      "cache": false,
+      "dependsOn": ["db:generate"],
+      "inputs": [
+        "prisma/schema.prisma",
+        "prisma/migrations/**"
+      ],
+      "env": ["DATABASE_URL"]
+    },
+
+    "seed": {
+      "cache": false,
+      "dependsOn": ["db:generate", "db:migrate"],
+      "inputs": [
+        "prisma/seed.ts",
+        "prisma/schema.prisma"
+      ],
+      "env": ["DATABASE_URL"]
+    },
+
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build", "db:generate"],
+      "env": [
+        "NODE_ENV",
+        "NEXT_PUBLIC_*",
+        "DATABASE_URL",
+        "POSTGRES_URL",
+        "RESEND_API_KEY",
+        "KINFORM_LLM_PROVIDER",
+        "PERSONA_GENAI_HOST",
+        "PERSONA_GENAI_PORT"
+      ]
+    },
+
+    "start": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["build"],
+      "env": [
+        "NODE_ENV",
+        "PORT",
+        "NEXT_PUBLIC_*",
+        "DATABASE_URL",
+        "POSTGRES_URL",
+        "RESEND_API_KEY"
+      ]
+    },
+
+    "clean": {
+      "cache": false
+    }
+  }
+}

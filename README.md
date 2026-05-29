@@ -49,13 +49,30 @@ npm install
 
 # 2. Bring up the data layer (defaults to local SQLite — zero config)
 cp .env.example .env
-npm run graph:generate     # generate Prisma client
-npm run graph:migrate      # create / migrate dev database
-npm run graph:seed         # seed designs, drops, affiliates, sample revenue events
+npm run db:generate     # generate Prisma client (cached by turbo)
+npm run db:migrate      # create / migrate dev database
+npm run db:seed         # seed designs, drops, affiliates, sample revenue events
 
 # 3. Run the existing storefront (port 3000)
 npm run storefront:dev
+
+# Whole-graph tasks (use Turborepo's cache + remote cache):
+npm run lint            # turbo run lint
+npm run typecheck       # turbo run typecheck
+npm run build           # turbo run build
 ```
+
+### Turborepo Remote Cache
+
+Optional but recommended — speeds up CI to near-zero on cache hits. Set two repo secrets/vars:
+
+| Name                                  | Where               | Source                          |
+| ------------------------------------- | ------------------- | ------------------------------- |
+| `TURBO_TOKEN`                         | Secrets             | Vercel Account → Tokens         |
+| `TURBO_TEAM`                          | Variables           | Vercel team / personal slug     |
+| `TURBO_REMOTE_CACHE_SIGNATURE_KEY`    | Secrets (recommend) | any random 32-byte hex string   |
+
+These are already wired into [.github/workflows/ci.yml](.github/workflows/ci.yml) and `turbo.json`'s `remoteCache.signature: true`.
 
 PersonaGenAI (Phase 2) and Payload Studio (Phase 3) commands are wired in the root `package.json` and will activate as those phases land.
 

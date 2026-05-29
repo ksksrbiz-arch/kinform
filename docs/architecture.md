@@ -17,16 +17,26 @@ Everything else in the system exists to safely generate content, validate it, at
 
 ---
 
-## 2. Repository shape — why a monorepo, why npm workspaces
+## 2. Repository shape — why a monorepo, why npm workspaces + Turborepo
 
-We chose a single repo with `npm workspaces` over multiple repos or pnpm/turbo because:
+We chose a single repo with `npm workspaces` over multiple repos because:
 
 - The storefront, IDE, and agentic service all consume the same TypeScript types from `packages/torqued-graph` and the same governance rules from `packages/shared`. Cross-repo PRs would be the dominant unit of change.
 - npm workspaces are already the package manager of the existing storefront. No tooling migration tax.
-- Turborepo can be layered on later without changing folder shape.
 - The Python service (`apps/persona-genai`) is *not* a JS workspace — it lives in the monorepo as a sibling app with its own `pyproject.toml`. It consumes `packages/torqued-graph/python/` as a local-path Python dependency, mirroring the Prisma schema.
 
-**Trade-off:** root `node_modules` grows. Acceptable; CI caches mitigate it.
+**Turborepo on top.** `turbo.json` declares explicit `inputs` and `outputs` per task so the cache key is precise (no over-invalidation, no missed invalidation):
+
+- `db:generate` is a *proper cached task* — input is just `prisma/schema.prisma`, output is `prisma/generated/**`. Re-runs only when the schema changes.
+- `build`, `lint`, `typecheck`, and `test` declare `env` arrays so any environment-variable change participates in the cache key (`NEXT_PUBLIC_*`, `DATABASE_URL`, `KINFORM_LLM_PROVIDER`, etc.).
+- `dev` and `start` are marked `persistent: true` (no cache) so Turbo treats them as long-running processes.
+- `^build` dependencies wire up package-graph ordering: `@kinform/shared` depends on `@kinform/torqued-graph`, so building or typechecking `shared` waits for `torqued-graph`'s `db:generate` output.
+
+**Vercel Remote Cache is enabled.** Even though Vercel may not be the deploy target for every workspace, the remote cache is free to use and makes CI builds ~zero-cost after the first warm run. Wire it by setting `TURBO_TOKEN` (secret) and `TURBO_TEAM` (variable) in the repo settings. Signed artifacts (`TURBO_REMOTE_CACHE_SIGNATURE_KEY`) prevent a compromised cache from injecting builds.
+
+**CI uses `turbo prune`.** The `storefront` job in `.github/workflows/ci.yml` runs `turbo prune --scope=@kinform/storefront --docker`, then `npm ci` inside the pruned subset. This keeps CI install times bounded to a single app's transitive dependency tree, and the same pattern works for serverless/Docker deploys later.
+
+**Trade-off:** root `node_modules` grows. Acceptable; the remote cache and pruned installs mitigate it everywhere it matters.
 
 ---
 

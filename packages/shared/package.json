@@ -12,9 +12,10 @@
     }
   },
   "scripts": {
-    "build": "tsc --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@kinform/torqued-graph": "*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

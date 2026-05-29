@@ -8,23 +8,32 @@
     "packages/*"
   ],
   "scripts": {
-    "storefront:dev": "npm run dev --workspace apps/storefront",
-    "storefront:build": "npm run build --workspace apps/storefront",
-    "studio:dev": "npm run dev --workspace apps/payload-studio",
-    "studio:build": "npm run build --workspace apps/payload-studio",
-    "graph:generate": "npm run prisma:generate --workspace packages/torqued-graph",
-    "graph:migrate": "npm run prisma:migrate --workspace packages/torqued-graph",
-    "graph:seed": "npm run seed --workspace packages/torqued-graph",
-    "shared:build": "npm run build --workspace packages/shared",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "dev": "turbo run dev",
+    "clean": "turbo run clean && rm -rf .turbo node_modules/.cache",
+    "storefront:dev": "turbo run dev --filter=@kinform/storefront",
+    "storefront:build": "turbo run build --filter=@kinform/storefront",
+    "studio:dev": "turbo run dev --filter=@kinform/payload-studio",
+    "studio:build": "turbo run build --filter=@kinform/payload-studio",
+    "db:generate": "turbo run db:generate --filter=@kinform/torqued-graph",
+    "db:migrate": "turbo run db:migrate --filter=@kinform/torqued-graph",
+    "db:migrate:deploy": "turbo run db:migrate:deploy --filter=@kinform/torqued-graph",
+    "db:seed": "turbo run seed --filter=@kinform/torqued-graph",
+    "db:studio": "npm run prisma:studio --workspace @kinform/torqued-graph",
     "persona:dev": "cd apps/persona-genai && uvicorn kinform_persona.app:app --reload --port 8088",
     "persona:test": "cd apps/persona-genai && python -m pytest -q",
-    "governance:check": "node infra/github-actions/scripts/governance-check.mjs",
-    "lint": "npm run lint --workspaces --if-present",
-    "build": "npm run build --workspaces --if-present"
+    "governance:check": "node infra/github-actions/scripts/governance-check.mjs"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0"
   },
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "packageManager": "npm@11.9.0"
 }
