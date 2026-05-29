@@ -2,6 +2,16 @@
 
 See the Prisma schema for design commentary; this file deliberately keeps
 column names and semantics identical so the two ORMs can share a database.
+
+Column naming convention
+------------------------
+Prisma writes columns in **camelCase** by default. Python prefers
+**snake_case**. We resolve this by mapping every Python attribute to the
+camelCase storage name with the second positional argument to
+``mapped_column``, e.g. ``physical_id: Mapped[str] = mapped_column("physicalId", ...)``.
+
+When you add a new column, follow this pattern so the two ORMs continue to
+read/write the same SQLite/Postgres rows without runtime errors.
 """
 from __future__ import annotations
 

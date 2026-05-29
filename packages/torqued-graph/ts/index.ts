@@ -56,6 +56,11 @@ export interface RevenueEvent {
   kind: "scan" | "sale" | "callback" | string;
   amountCents: number;
   currency: string;
+  /**
+   * Deserialised form of the DB column `splitJson` (Prisma stores it as a
+   * `String`; this interface exposes the parsed array for callers).
+   * Re-serialise with `JSON.stringify(event.split)` before writing.
+   */
   split: RevenueSplitEntry[];
   occurredAt: string;
   sourcePhysicalId?: string | null;
