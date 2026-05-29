@@ -1,0 +1,95 @@
+name: KINFORM-AEO Governance
+
+# Enforces the cross-service governance rules on every PR and on pushes to
+# main. Runs three guarantees:
+#   1. The Python governance pipeline validates every committed campaign JSON.
+#   2. The PersonaGenAI test suite passes (covers the orchestrator + DB layer).
+#   3. The Payload Studio's Polymorphic Bootstrapping Compiler tests pass
+#      (actually executes the generated Python script).
+#
+# On pushes to main, --require-approval is enabled so unapproved campaigns
+# cannot reach production.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "infra/**"
+      - ".github/workflows/kinform-governance.yml"
+  pull_request:
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "infra/**"
+      - ".github/workflows/kinform-governance.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  governance:
+    name: Governance Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install shared + torqued-graph + persona-genai
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e packages/shared
+          pip install -e packages/torqued-graph
+          pip install -e apps/persona-genai
+          pip install pytest httpx
+
+      - name: Run PersonaGenAI test suite
+        working-directory: apps/persona-genai
+        run: pytest -q
+
+      - name: Validate committed campaigns (pull request)
+        if: github.event_name == 'pull_request'
+        run: |
+          python infra/github-actions/governance_check.py \
+            --paths 'apps/payload-studio/**/campaigns/**/*.json' \
+                    'packages/**/seed/campaigns/*.json' \
+            --report governance-report.json
+
+      - name: Validate committed campaigns (main — require approval)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          python infra/github-actions/governance_check.py \
+            --require-approval \
+            --paths 'apps/payload-studio/**/campaigns/**/*.json' \
+                    'packages/**/seed/campaigns/*.json' \
+            --report governance-report.json
+
+      - name: Upload governance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-report
+          path: governance-report.json
+          if-no-files-found: ignore
+
+  compiler:
+    name: Bootstrapping Compiler Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run Payload Studio compiler tests
+        working-directory: apps/payload-studio
+        run: node --test tests/*.test.mjs

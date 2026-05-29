@@ -1,0 +1,20 @@
+{
+  "name": "@kinform/torqued-graph",
+  "version": "1.0.0",
+  "description": "Prisma schema and shared TypeScript types for the KINFORM Torqued Graph.",
+  "private": true,
+  "main": "ts/index.ts",
+  "types": "ts/index.ts",
+  "scripts": {
+    "prisma:generate": "prisma generate --schema=prisma/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --schema=prisma/schema.prisma",
+    "prisma:push": "prisma db push --schema=prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.22.0",
+    "typescript": "^5"
+  }
+}

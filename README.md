@@ -197,3 +197,82 @@ Welcome to KINFORM.
 ---
 
 *Built with care in April 2026 by Grok for the founder of KINFORM.*
+
+---
+
+## KINFORM Autonomous Ecosystem Orchestrator (KINFORM-AEO)
+
+In addition to the marketing site above, this repo now hosts the
+**KINFORM-AEO** monorepo — the autonomous physical-to-digital platform that
+turns Torqued Affiliation™ into a governed, end-to-end runnable system.
+
+| Component                          | Path                            | Purpose                                                    |
+| ---------------------------------- | ------------------------------- | ---------------------------------------------------------- |
+| **PersonaGenAI** (backend)         | `apps/persona-genai/`           | FastAPI + LangGraph multi-agent campaign orchestrator      |
+| **Payload Studio** (IDE)           | `apps/payload-studio/`          | Next.js 15 visual IDE + Polymorphic Bootstrapping Compiler |
+| **Torqued Graph** (DB)             | `packages/torqued-graph/`       | Prisma schema + SQLAlchemy models (bipartite affiliate)    |
+| **Shared governance**              | `packages/shared/`              | Cross-language rule engine (Python + TypeScript)           |
+| **Governance Pipeline**            | `infra/github-actions/` + `.github/workflows/kinform-governance.yml` | CI-time enforcement of every rule |
+| **Architecture**                   | `docs/architecture.md`          | ADRs and end-to-end diagrams                               |
+
+### Quickstart (KINFORM-AEO)
+
+```bash
+# 1. Backend orchestrator
+cd apps/persona-genai
+python -m venv .venv && source .venv/bin/activate
+pip install -e ../../packages/shared -e ../../packages/torqued-graph -e .
+uvicorn app.main:app --reload --port 8000
+
+# 2. Seed the Torqued Graph (optional — creates one drop, 3 products, 2 affiliates)
+python ../../packages/torqued-graph/seed/seed.py
+
+# 3. Visual IDE
+cd ../payload-studio
+npm install
+npm run dev          # http://localhost:3001
+
+# 4. End-to-end:
+#    - Open the Studio, click "+ New campaign via PersonaGenAI"
+#    - Simulate → Approve → Production
+#    - Click "Compile & Download Bootstrapper" with Production-only ON
+#    - Run: python kinform-bootstrap-*.py --target ./my-drop
+```
+
+### Environment
+
+See `.env.example`. The two ORMs share `DATABASE_URL` (SQLite by default,
+Postgres-ready). The Payload Studio finds the FastAPI service via
+`NEXT_PUBLIC_PERSONA_GENAI_URL`. The deterministic Brand Voice agent runs
+without an LLM key; set `KINFORM_LLM_PROVIDER=openai` to enable real LLM
+copy.
+
+### Tests
+
+```bash
+# Backend
+cd apps/persona-genai && pytest -q       # 14 tests
+
+# Compiler
+cd ../payload-studio && npm test         # 3 tests (executes the generated .py)
+
+# Governance CI (locally)
+python infra/github-actions/governance_check.py \
+  --paths 'apps/payload-studio/**/campaigns/**/*.json' \
+          'packages/**/seed/campaigns/*.json'
+```
+
+### What "governed" means here
+
+- **No campaign reaches production without two explicit human approvals.**
+  Stage transitions are enforced in `app/simulation.py`; the human gate
+  re-runs governance with a fresh `ValidationLog` row.
+- **Same rules everywhere.** `packages/shared` is the single source of
+  truth. The Studio, the orchestrator, the CI pipeline, and the generated
+  bootstrap script all pin on `GOVERNANCE_RULES_VERSION`.
+- **The compiler refuses to compile** unapproved files when
+  "Production-only" is on, and the generated script independently
+  re-validates the rules version at runtime.
+
+Read `docs/architecture.md` for the full design rationale.
+
