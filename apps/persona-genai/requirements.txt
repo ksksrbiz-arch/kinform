@@ -1,0 +1,9 @@
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.30,<1.0
+pydantic>=2.7,<3.0
+SQLAlchemy>=2.0,<3.0
+# Optional — used by the supervisor when present. The fallback path works
+# without them so the service runs in air-gapped CI.
+# langgraph>=0.2
+# langchain-core>=0.3
+# openai>=1.40

@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // KINFORM-AEO monorepo subprojects have their own tooling.
+    "apps/**",
+    "packages/**",
+    "infra/**",
   ]),
 ]);
 
