@@ -5,11 +5,17 @@ import { EarringPhoto } from "@/components/ui/EarringPhoto";
 import { PreOrderTeaser } from "@/components/preorder/PreOrderTeaser";
 import { HomeHero } from "@/components/HomeHero";
 import { SignatureCollection } from "@/components/SignatureCollection";
+import { MarqueeTape } from "@/components/MarqueeTape";
+import { StatementSection } from "@/components/StatementSection";
+import { DualCTABlock } from "@/components/DualCTABlock";
 
 export default function KinformHome() {
   return (
     <>
       <HomeHero />
+
+      {/* Marquee tape — adds bold movement between hero and collection */}
+      <MarqueeTape />
 
       {/* Collection — Premium & Animated (client island for motion) */}
       <section id="collection" className="section max-w-7xl mx-auto px-4 sm:px-8">
@@ -124,25 +130,11 @@ export default function KinformHome() {
         </div>
       </section>
 
-      {/* Philosophy — Confident & Modern */}
-      <section className="section border-y border-[#D4C9B8] section-gradient">
-        <div className="max-w-2xl mx-auto px-4 sm:px-8 text-center">
-          <p className="text-2xl sm:text-3xl md:text-4xl leading-tight tracking-[-0.015em] text-[#2C2722]">
-            Clothing that feels like it already belongs to you.
-          </p>
-          <Link href="/story" className="mt-8 inline-block text-sm tracking-[0.15em] font-medium hover:text-[#B37A5F] transition-colors">THE STORY BEHIND IT →</Link>
-        </div>
-      </section>
+      {/* Philosophy — bold statement section, dark background */}
+      <StatementSection />
 
-      {/* Atelier Teaser — Now with real power */}
-      <section className="section max-w-5xl mx-auto px-4 sm:px-8 text-center border-b border-[#D4C9B8]">
-        <div className="uppercase tracking-[0.2em] text-xs text-[#B37A5F] mb-3">FOR FOUNDERS, MAKERS &amp; PARTNERS</div>
-        <h3 className="font-display text-5xl sm:text-6xl tracking-[-0.03em] mb-4">The Atelier</h3>
-        <p className="max-w-md mx-auto text-lg text-[#6F5A47] mb-8">
-          Production tools built for the ones actually making things. Tech packs, BOMs, grading, and real cost tracking.
-        </p>
-        <Link href="/atelier" className="btn-primary text-base px-14 py-4">Enter the Atelier</Link>
-      </section>
+      {/* Dual CTA — Atelier (for industry) + Wholesale (for retail) */}
+      <DualCTABlock />
 
       {/* Final CTA — Stronger */}
       <section id="join" className="section max-w-xl mx-auto px-4 sm:px-8 text-center">
