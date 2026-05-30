@@ -1,8 +1,12 @@
 import { NextRequest } from "next/server";
 import { updateInquiry, deleteInquiry, addTaskToInquiry, toggleTask, deleteTask, getAllInquiries } from "@/lib/inquiries";
 import { sendTaskNotificationEmail } from "@/lib/email";
+import { requireProductionAuth } from "@/lib/auth";
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await requireProductionAuth();
+  if (denied) return denied;
+
   const { id } = await params;
   const body = await request.json();
 
@@ -48,6 +52,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const denied = await requireProductionAuth();
+  if (denied) return denied;
+
   const { id } = await params;
   const success = await deleteInquiry(id);
   return Response.json({ success }, { status: success ? 200 : 404 });
