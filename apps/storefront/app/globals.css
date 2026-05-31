@@ -404,6 +404,30 @@ label {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
+
+  /* Better mobile typography scale */
+  h1 { font-size: clamp(2.5rem, 10vw, 4.5rem); }
+  
+  /* Prevent horizontal overflow from wide elements */
+  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  
+  /* Scrollbar styling for horizontal scroll */
+  ::-webkit-scrollbar { height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 4px; }
+  
+  /* Better tap feedback */
+  .btn-primary:active, .btn-secondary:active {
+    transform: scale(0.97);
+  }
+}
+
+/* Safe area insets for modern phones (notch, dynamic island) */
+@supports (padding-top: env(safe-area-inset-top)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
 }
 
 /* ============================================
