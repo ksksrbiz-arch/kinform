@@ -443,6 +443,51 @@ footer {
   border-top: 1px solid var(--border-subtle);
 }
 
+/* ============================================
+   MOBILE POLISH — Touch targets, safe areas, responsive type
+   ============================================ */
+
+/* Safe area padding for floating mobile CTAs (iPhone notch etc) */
+.safe-area-pb {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+/* Better touch targets on mobile */
+@media (max-width: 768px) {
+  .btn-primary, .btn-secondary {
+    min-height: 48px;
+    font-size: 1rem;
+  }
+
+  /* Prevent horizontal overflow on mobile */
+  .section {
+    overflow-x: hidden;
+  }
+
+  /* Tighter spacing on small screens */
+  .font-display {
+    word-break: break-word;
+  }
+}
+
+/* Smooth page transitions */
+main {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* Print styles for future PDF-friendly pages (not the generated PDF) */
 @media print {
   .no-print {
